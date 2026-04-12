@@ -5,6 +5,9 @@
   "extDesc": {
     "message": "Управляйте Synology Download Station из браузера"
   },
+  "extSettingsTitle": {
+    "message": "Настройки - Менеджер загрузок Synology"
+  },
   "contextMenuAdd": {
     "message": "Добавить в Synology Download Station"
   },
@@ -12,7 +15,7 @@
     "message": "Задача загрузки успешно добавлена"
   },
   "settingsSaved": {
-    "message": "Настройки сохранены"
+    "message": "Настройки сохранены, идет проверка соединения..."
   },
   "hostLabel": {
     "message": "Хост Synology"
@@ -25,6 +28,34 @@
   },
   "saveBtn": {
     "message": "Сохранить"
+  },
+  "invalidHost": {
+    "message": "Ошибка: Неверно указан Хост, должен начинаться с http:// или https://"
+  },
+  "requiredAll": {
+    "message": "Ошибка: Необходимо заполнить все поля"
+  },
+  "loginSuccess": {
+    "message": "Соединение установлено"
+  },
+  "operationError": {
+    "message": "Ошибка: $ERROR$",
+    "description": "Оболочка для внешних ошибок.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Network connection refused"
+      }
+    }
+  },
+  "clearSettings": {
+    "message": "Очистить настройки"
+  },
+  "clearSettingsConfirm": {
+    "message": "Вы собираетесь очистить все настройки. Уверены?"
+  },
+  "clearSettingsSuccess": {
+    "message": "Настройки очищены"
   },
   "openDsm": {
     "message": "Открыть Download Station"

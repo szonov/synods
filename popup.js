@@ -1,4 +1,4 @@
-// popup.js
+import {applyI18n} from './lib/i18n.js'
 
 let currentDownloads = [];
 let lastUpdate = null;
@@ -38,8 +38,8 @@ function openDsm() {
   // TODO: Get host from storage and open URL
 }
 
-function openSettings() {
-  chrome.runtime.openOptionsPage();
+async function openSettings() {
+  await chrome.runtime.openOptionsPage();
 }
 
 function clearAllDownloads() {

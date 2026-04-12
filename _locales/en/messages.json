@@ -5,6 +5,9 @@
   "extDesc": {
     "message": "Manage Synology Download Station from your browser"
   },
+  "extSettingsTitle": {
+    "message": "Settings - Synology Download Manager"
+  },
   "contextMenuAdd": {
     "message": "Add to Synology Download Station"
   },
@@ -12,7 +15,7 @@
     "message": "Download task added successfully"
   },
   "settingsSaved": {
-    "message": "Settings saved"
+    "message": "Settings saved, connection checking in progress..."
   },
   "hostLabel": {
     "message": "Synology Host"
@@ -25,6 +28,34 @@
   },
   "saveBtn": {
     "message": "Save"
+  },
+  "invalidHost": {
+    "message": "Error: The Host is incorrectly specified, it must start with http:// or https://"
+  },
+  "requiredAll": {
+    "message": "Error: All fields are required."
+  },
+  "loginSuccess": {
+    "message": "Connection established."
+  },
+  "operationError": {
+    "message": "ERROR: $ERROR$",
+    "description": "Wrapper for external errors.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Network connection refused"
+      }
+    }
+  },
+  "clearSettings": {
+    "message": "Clear settings"
+  },
+  "clearSettingsConfirm": {
+    "message": "You are about to clear all settings. Are you sure?"
+  },
+  "clearSettingsSuccess": {
+    "message": "Settings cleared"
   },
   "openDsm": {
     "message": "Open Download Station"

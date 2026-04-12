@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings - Synology Download Manager</title>
+    <title data-i18n="extSettingsTitle">Settings - Synology Download Manager</title>
     <link rel="stylesheet" href="settings.css">
+    <script src="settings.js" type="module"></script>
 </head>
 <body>
 <div class="container">
@@ -12,7 +13,7 @@
 
     <div class="form-group">
         <label for="host" data-i18n="hostLabel">Synology Host</label>
-        <input type="text" id="host" placeholder="https://your-synology:5000">
+        <input type="text" id="host" placeholder="https://your-synology:5001">
     </div>
 
     <div class="form-group">
@@ -25,20 +26,15 @@
         <input type="password" id="password">
     </div>
 
-    <div class="form-group">
-        <label for="language">Language / Язык</label>
-        <select id="language">
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-        </select>
+    <div class="action-group">
+        <button id="saveBtn" data-i18n="saveBtn">Save</button>
+        <span id="status"></span>
     </div>
-
-    <button id="saveBtn" data-i18n="saveBtn">Save</button>
-    <span id="status"></span>
 </div>
 
-<script src="storage.js"></script>
-<script src="i18n.js"></script>
-<script src="settings.js"></script>
+<div class="action-delete">
+    <a href="#" id="clearBtn" data-i18n="clearSettings">Clear settings</a>
+</div>
+
 </body>
 </html>

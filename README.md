@@ -14,7 +14,7 @@ Data Storage:
 
 Localization (i18n):
 - Multi-language support: Russian and English.
-- Language auto-detected from browser or manually selectable in settings.
+- Language is automatically detected from the user's browser using chrome.i18n API.
 
 Popup Interface:
 - Link to open Synology Download Station.
@@ -38,4 +38,4 @@ Technology Stack:
 - chrome.storage.local
 - HTML/CSS (no frameworks)
 - Synology API: SYNO.DownloadStation.Task
-- i18n: Chrome _locales structure
+- i18n: Chrome _locales structure (auto-detected from browser)

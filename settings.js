@@ -1,24 +1,78 @@
-// settings.js
+import {applyI18n,getMessage as __} from './lib/i18n.js'
+import Status from './lib/status.js'
+import * as STORAGE from './lib/storage.js'
 
-document.addEventListener('DOMContentLoaded', async () => {
-  applyI18n();
+const $host = document.getElementById('host')
+const $username = document.getElementById('username')
+const $password = document.getElementById('password')
+const $saveBtn = document.getElementById('saveBtn')
+const $clearBtn = document.getElementById('clearBtn')
 
-  const settings = await getAllSettings();
-  document.getElementById('host').value = settings[STORAGE_KEYS.HOST] || '';
-  document.getElementById('username').value = settings[STORAGE_KEYS.USERNAME] || '';
-  document.getElementById('password').value = settings[STORAGE_KEYS.PASSWORD] || '';
-  document.getElementById('language').value = settings[STORAGE_KEYS.LANGUAGE] || 'en';
+const status = new Status(document.getElementById('status'))
 
-  document.getElementById('saveBtn').addEventListener('click', saveSettings);
-});
+applyI18n();
+$saveBtn.addEventListener('click', saveSettings);
+$clearBtn.addEventListener('click', clearSettings);
+await loadSettings();
+
+async function loadSettings() {
+  const settings = await STORAGE.get()
+
+  $host.value = settings.host
+  $username.value = settings.account
+  $password.value = settings.passwd
+}
 
 async function saveSettings() {
-  await saveSetting(STORAGE_KEYS.HOST, document.getElementById('host').value);
-  await saveSetting(STORAGE_KEYS.USERNAME, document.getElementById('username').value);
-  await saveSetting(STORAGE_KEYS.PASSWORD, document.getElementById('password').value);
-  await saveSetting(STORAGE_KEYS.LANGUAGE, document.getElementById('language').value);
+  const settings = {
+    host: $host.value.trim(),
+    account: $username.value.trim(),
+    passwd: $password.value,
+    sid: "" // important clear sid here
+  }
 
-  const status = document.getElementById('status');
-  status.textContent = chrome.i18n.getMessage('settingsSaved');
-  setTimeout(() => { status.textContent = ''; }, 2000);
+  if (!validateInput(settings)) {
+    return
+  }
+
+  await STORAGE.set(settings);
+
+  status.neutral(__('settingsSaved'), 10000)
+
+  $saveBtn.disabled = true
+  const response = await chrome.runtime.sendMessage({action: "login"});
+  $saveBtn.disabled = false
+
+  if (response.success) {
+    status.success(response.message)
+  } else {
+    status.error(response.message)
+  }
 }
+
+async function clearSettings() {
+  if (!confirm(__('clearSettingsConfirm'))) {
+    return
+  }
+
+  await STORAGE.clear();
+  await loadSettings();
+
+  status.success(__('clearSettingsSuccess'))
+}
+
+function validateInput({host,account,passwd}) {
+
+  if (host === "" || account === "" || passwd === "") {
+    status.error(__('requiredAll'))
+    return false
+  }
+
+  if (!host.startsWith("http://") && !host.startsWith("https://")) {
+    status.error(__('invalidHost'))
+    return false
+  }
+
+  return true;
+}
+
