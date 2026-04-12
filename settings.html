@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - Synology Download Manager</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+<div class="container">
+    <h1 data-i18n="extName">Synology Download Manager</h1>
+    <h2 data-i18n="openSettings">Settings</h2>
+
+    <div class="form-group">
+        <label for="host" data-i18n="hostLabel">Synology Host</label>
+        <input type="text" id="host" placeholder="https://your-synology:5000">
+    </div>
+
+    <div class="form-group">
+        <label for="username" data-i18n="usernameLabel">Username</label>
+        <input type="text" id="username">
+    </div>
+
+    <div class="form-group">
+        <label for="password" data-i18n="passwordLabel">Password</label>
+        <input type="password" id="password">
+    </div>
+
+    <div class="form-group">
+        <label for="language">Language / Язык</label>
+        <select id="language">
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+        </select>
+    </div>
+
+    <button id="saveBtn" data-i18n="saveBtn">Save</button>
+    <span id="status"></span>
+</div>
+
+<script src="storage.js"></script>
+<script src="i18n.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

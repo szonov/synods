@@ -1,0 +1,56 @@
+{
+  "extName": {
+    "message": "Synology Download Manager"
+  },
+  "extDesc": {
+    "message": "Manage Synology Download Station from your browser"
+  },
+  "contextMenuAdd": {
+    "message": "Add to Synology Download Station"
+  },
+  "taskAdded": {
+    "message": "Download task added successfully"
+  },
+  "settingsSaved": {
+    "message": "Settings saved"
+  },
+  "hostLabel": {
+    "message": "Synology Host"
+  },
+  "usernameLabel": {
+    "message": "Username"
+  },
+  "passwordLabel": {
+    "message": "Password"
+  },
+  "saveBtn": {
+    "message": "Save"
+  },
+  "openDsm": {
+    "message": "Open Download Station"
+  },
+  "openSettings": {
+    "message": "Settings"
+  },
+  "clearAll": {
+    "message": "Clear all downloads"
+  },
+  "lastUpdate": {
+    "message": "Last update"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "pause": {
+    "message": "Pause"
+  },
+  "resume": {
+    "message": "Resume"
+  },
+  "noDownloads": {
+    "message": "No active downloads"
+  },
+  "errorFetching": {
+    "message": "Error fetching downloads"
+  }
+}

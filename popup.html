@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Synology Download Manager</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 data-i18n="extName">Synology Download Manager</h1>
+        <div class="links">
+            <a href="#" id="openDsmLink" data-i18n="openDsm">Open Download Station</a>
+            <a href="#" id="openSettingsLink" data-i18n="openSettings">Settings</a>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button id="clearAllBtn" data-i18n="clearAll">Clear all downloads</button>
+        <span id="lastUpdateTime"></span>
+    </div>
+
+    <div id="downloadsList" class="downloads-list">
+        <div class="loading">Loading...</div>
+    </div>
+</div>
+
+<script src="storage.js"></script>
+<script src="i18n.js"></script>
+<script src="api.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

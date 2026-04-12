@@ -1,0 +1,56 @@
+{
+  "extName": {
+    "message": "Менеджер загрузок Synology"
+  },
+  "extDesc": {
+    "message": "Управляйте Synology Download Station из браузера"
+  },
+  "contextMenuAdd": {
+    "message": "Добавить в Synology Download Station"
+  },
+  "taskAdded": {
+    "message": "Задача загрузки успешно добавлена"
+  },
+  "settingsSaved": {
+    "message": "Настройки сохранены"
+  },
+  "hostLabel": {
+    "message": "Хост Synology"
+  },
+  "usernameLabel": {
+    "message": "Имя пользователя"
+  },
+  "passwordLabel": {
+    "message": "Пароль"
+  },
+  "saveBtn": {
+    "message": "Сохранить"
+  },
+  "openDsm": {
+    "message": "Открыть Download Station"
+  },
+  "openSettings": {
+    "message": "Настройки"
+  },
+  "clearAll": {
+    "message": "Очистить все загрузки"
+  },
+  "lastUpdate": {
+    "message": "Последнее обновление"
+  },
+  "remove": {
+    "message": "Удалить"
+  },
+  "pause": {
+    "message": "Пауза"
+  },
+  "resume": {
+    "message": "Возобновить"
+  },
+  "noDownloads": {
+    "message": "Нет активных загрузок"
+  },
+  "errorFetching": {
+    "message": "Ошибка получения загрузок"
+  }
+}
