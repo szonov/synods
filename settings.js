@@ -2,6 +2,7 @@ import {applyI18n,getMessage as __} from './lib/i18n.js'
 import Status from './lib/status.js'
 import * as STORAGE from './lib/storage.js'
 
+const $form = document.querySelector('form')
 const $host = document.getElementById('host')
 const $username = document.getElementById('username')
 const $password = document.getElementById('password')
@@ -11,8 +12,10 @@ const $clearBtn = document.getElementById('clearBtn')
 const status = new Status(document.getElementById('status'))
 
 applyI18n();
-$saveBtn.addEventListener('click', saveSettings);
+
+$form.addEventListener('submit', saveSettings);
 $clearBtn.addEventListener('click', clearSettings);
+
 await loadSettings();
 
 async function loadSettings() {
@@ -23,7 +26,9 @@ async function loadSettings() {
   $password.value = settings.passwd
 }
 
-async function saveSettings() {
+async function saveSettings(e) {
+  e.preventDefault()
+
   const settings = {
     host: $host.value.trim(),
     account: $username.value.trim(),
@@ -39,9 +44,9 @@ async function saveSettings() {
 
   status.neutral(__('settingsSaved'), 10000)
 
-  $saveBtn.disabled = true
+  disableForm(true)
   const response = await chrome.runtime.sendMessage({action: "login"});
-  $saveBtn.disabled = false
+  disableForm(false)
 
   if (response.success) {
     status.success(response.message)
@@ -50,7 +55,9 @@ async function saveSettings() {
   }
 }
 
-async function clearSettings() {
+async function clearSettings(e) {
+  e.preventDefault()
+
   if (!confirm(__('clearSettingsConfirm'))) {
     return
   }
@@ -74,5 +81,13 @@ function validateInput({host,account,passwd}) {
   }
 
   return true;
+}
+
+function disableForm(disabled = true) {
+  $host.disabled = disabled
+  $username.disabled = disabled
+  $password.disabled = disabled
+  $saveBtn.disabled = disabled
+  $clearBtn.className = disabled ? 'd-none' : ''
 }
 
