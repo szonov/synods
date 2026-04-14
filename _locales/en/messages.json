@@ -69,6 +69,90 @@
   "lastUpdate": {
     "message": "Last update"
   },
+  "status_line_downloading": {
+    "message": "$PERCENT$ \u2013 $ESTIMATE$ \u2013 $CURRENT$ of $TOTAL$ at $SPEED$",
+    "placeholders": {
+      "percent": {
+        "content": "$1",
+        "example": "65.5%"
+      },
+      "estimate": {
+        "content": "$2",
+        "example": "1:23 remaining"
+      },
+      "current": {
+        "content": "$3",
+        "example": "100KB"
+      },
+      "total": {
+        "content": "$4",
+        "example": "10MB"
+      },
+      "speed": {
+        "content": "$5",
+        "example": "50KB/s"
+      }
+    }
+  },
+  "eta_remaining": {
+    "message": "$ETA$ remaining",
+    "placeholders": {
+      "eta": {
+        "content": "$1",
+        "example": "5:45"
+      }
+    }
+  },
+  "eta_no_estimate": {
+    "message": "no estimate"
+  },
+  "status_line_downloaded": {
+    "message": "100% \u2013 $TOTAL$ downloaded",
+    "placeholders": {
+      "total": {
+        "content": "$1",
+        "example": "10 MB"
+      }
+    }
+  },
+  "status_line_uploading": {
+    "message": "$RATIO$ ratio \u2013 $TOTAL$ uploaded at $SPEED$",
+    "placeholders": {
+      "ratio": {
+        "content": "$1",
+        "example": "1.23"
+      },
+      "total": {
+        "content": "$2",
+        "example": "10 MB"
+      },
+      "speed": {
+        "content": "$3",
+        "example": "50 KB/s"
+      }
+    }
+  },
+  "status_line_other": {
+    "message": "$STATUS$ \u2013 $PERCENT$ \u2013 $CURRENT$ of $TOTAL$ downloaded",
+    "placeholders": {
+      "status": {
+        "content": "$1",
+        "example": "Paused"
+      },
+      "percent": {
+        "content": "$2",
+        "example": "1.23%"
+      },
+      "current": {
+        "content": "$3",
+        "example": "100 KB"
+      },
+      "total": {
+        "content": "$4",
+        "example": "10 MB"
+      }
+    }
+  },
   "remove": {
     "message": "Remove"
   },

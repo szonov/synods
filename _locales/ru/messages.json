@@ -69,6 +69,91 @@
   "lastUpdate": {
     "message": "Последнее обновление"
   },
+  "status_line_downloading": {
+    "message": "$PERCENT$ \u2013 $ESTIMATE$ \u2013 $CURRENT$ из $TOTAL$ на $SPEED$",
+    "placeholders": {
+      "percent": {
+        "content": "$1",
+        "example": "65.5%"
+      },
+      "estimate": {
+        "content": "$2",
+        "example": "Осталось 1:23"
+      },
+      "current": {
+        "content": "$3",
+        "example": "100 КБ"
+      },
+      "total": {
+        "content": "$4",
+        "example": "10 МБ"
+      },
+      "speed": {
+        "content": "$5",
+        "example": "50 КБ/сек"
+      }
+    }
+  },
+  "eta_remaining": {
+    "message": "Осталось $ETA$",
+    "placeholders": {
+      "eta": {
+        "content": "$1",
+        "example": "5:45"
+      }
+    }
+  },
+  "eta_no_estimate": {
+    "message": "нет оценки"
+  },
+  "status_line_downloaded": {
+    "message": "100% \u2013 загружено $TOTAL$",
+    "placeholders": {
+      "total": {
+        "content": "$1",
+        "example": "10 MB"
+      }
+    }
+  },
+  "status_line_uploading": {
+    "message": "Коэфициент $RATIO$ \u2013 загружено $TOTAL$ на $SPEED$",
+    "placeholders": {
+      "ratio": {
+        "content": "$1",
+        "example": "1.23"
+      },
+      "total": {
+        "content": "$2",
+        "example": "10 МБ"
+      },
+      "speed": {
+        "content": "$3",
+        "example": "50 КБ/сек"
+      }
+    }
+  },
+  "status_line_other": {
+    "message": "$STATUS$ \u2013 $PERCENT$ \u2013 загружено $CURRENT$ из $TOTAL$",
+    "placeholders": {
+      "status": {
+        "content": "$1",
+        "example": "Приостановлено"
+      },
+      "percent": {
+        "content": "$2",
+        "example": "1.23%"
+      },
+      "current": {
+        "content": "$3",
+        "example": "100 КБ"
+      },
+      "total": {
+        "content": "$4",
+        "example": "10 МБ"
+      }
+    }
+  },
+
   "remove": {
     "message": "Удалить"
   },

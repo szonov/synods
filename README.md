@@ -19,8 +19,7 @@ Localization (i18n):
 Popup Interface:
 - Link to open Synology Download Station.
 - Link to open extension settings page.
-- Button to clear all downloads from the list.
-- List of downloads with options: Remove, Pause, Resume.
+- List of downloads with options for each download: Remove, Pause, Resume.
 - Timestamp of the last list update.
 
 Context Menu:
