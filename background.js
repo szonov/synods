@@ -1,9 +1,11 @@
+import * as API from "./lib/api.js";
+
 chrome.runtime.onInstalled.addListener(() => {
   // Create context menu
   chrome.contextMenus.create({
     id: "addToSynology",
     title: chrome.i18n.getMessage("contextMenuAdd"),
-    contexts: ["link", "audio", "video", "image"]
+    contexts: ["link", "audio", "video", "image"],
   });
 });
 
@@ -19,27 +21,23 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       type: "basic",
       iconUrl: "icons/icon48.png",
       title: chrome.i18n.getMessage("extName"),
-      message: chrome.i18n.getMessage("taskAdded")
+      message: chrome.i18n.getMessage("taskAdded"),
     });
   }
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log(">> chrome.runtime.onMessage");
-  switch (msg.action)
-  {
+  console.log(">> chrome.runtime.onMessage", sender);
+  switch (msg.action) {
     case "login":
-      setTimeout(() => {
-        if (Math.random() >= 0.5) {
-          sendResponse({success: true, message: chrome.i18n.getMessage('loginSuccess')});
-        } else {
-          sendResponse({success: false, message: chrome.i18n.getMessage('operationError', 'Connection failed')});
-        }
-      }, 4000)
+      API.login().then(sendResponse)
       break;
   }
   return true;
-})
+});
 
+// chrome.storage.onChanged.addListener((changes, areaName) => {
+//   console.log(">> chrome.storage.onChanged.addListener", changes, areaName);
+// });
 // TODO: Add API call functions
 // TODO: Add session management
