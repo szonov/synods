@@ -8,28 +8,46 @@ const taskList = new TaskList(
   document.getElementById("downloadTemplate"),
 );
 
-taskList.onEvent((event, id) => {
+let timer = 0;
+
+async function refreshTasks() {
+  clearTimeout(timer);
+  const response = await chrome.runtime.sendMessage({ action: "tasks" });
+  if (response.success) {
+    const rr = taskList.render(response.data.tasks);
+    updateSpeeds(rr)
+    timer = setTimeout(refreshTasks, 5000);
+  }
+}
+
+await refreshTasks();
+
+// console.log(response);
+
+taskList.onEvent(async (event, id) => {
   console.log(`taskList.onEvent: ${event} / ${id}`);
 
-  if (event === "pause" && id === "dbid_230") {
+  clearTimeout(timer);
 
-    const res = taskList.render(mockTaskListResponse2.data.tasks);
-    updateSpeeds(res)
-    document.getElementById('lastUpdateTime').textContent =
-      `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
-  }
+  const response = await chrome.runtime.sendMessage({ action: event, data: {id} });
+
+  console.log(response);
+
+  await refreshTasks()
 });
 
 function updateSpeeds(renderResponse) {
   document.getElementById('totalDownloadSpeed').textContent = humanSpeed(renderResponse.speedDownload)
   document.getElementById('totalUploadSpeed').textContent = humanSpeed(renderResponse.speedUpload)
+  document.getElementById('lastUpdateTime').textContent =
+    `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
 }
 
-const res = taskList.render(mockTaskListResponse1.data.tasks);
-updateSpeeds(res)
+// const res = taskList.render(mockTaskListResponse1.data.tasks);
+// updateSpeeds(res)
 
-document.getElementById('lastUpdateTime').textContent =
-    `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
+// document.getElementById('lastUpdateTime').textContent =
+//     `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
 
 let currentDownloads = [];
 

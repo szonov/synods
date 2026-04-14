@@ -184,7 +184,7 @@ body {
             &:hover {
                 color: #1a73e8;
 
-                &[data-action="remove"] {
+                &[data-action="delete"] {
                     color: #d93025;
                 }
             }

@@ -32,6 +32,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case "login":
       API.login().then(sendResponse)
       break;
+
+    case "tasks":
+      API.getTasks().then(sendResponse)
+      break;
+
+    case "resume":
+      API.resumeTask(msg.data.id).then(sendResponse)
+      break;
+
+    case "pause":
+      API.pauseTask(msg.data.id).then(sendResponse)
+      break;
+
+    case "delete":
+      API.deleteTask(msg.data.id).then(sendResponse)
+      break;
   }
   return true;
 });
