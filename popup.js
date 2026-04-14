@@ -1,9 +1,9 @@
-import {applyI18n, getMessage as __} from './lib/i18n.js';
+import {applyI18n} from './lib/i18n.js';
 import * as STORAGE from './lib/storage.js';
-import { DownloadsList } from "./lib/downloads-list.js";
+import { TaskList, humanSpeed } from "./lib/tasks.js";
 import { mockTaskListResponse1, mockTaskListResponse2 } from "./lib/mock-api-responses.js";
 
-const taskList = new DownloadsList(
+const taskList = new TaskList(
   document.getElementById("downloadsList"),
   document.getElementById("downloadTemplate"),
 );
@@ -12,22 +12,24 @@ taskList.onEvent((event, id) => {
   console.log(`taskList.onEvent: ${event} / ${id}`);
 
   if (event === "pause" && id === "dbid_230") {
-    taskList.render(mockTaskListResponse2.data.tasks);
+
+    const res = taskList.render(mockTaskListResponse2.data.tasks);
+    updateSpeeds(res)
     document.getElementById('lastUpdateTime').textContent =
-      `${__('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
+      `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
   }
 });
 
-taskList.render(mockTaskListResponse1.data.tasks);
+function updateSpeeds(renderResponse) {
+  document.getElementById('totalDownloadSpeed').textContent = humanSpeed(renderResponse.speedDownload)
+  document.getElementById('totalUploadSpeed').textContent = humanSpeed(renderResponse.speedUpload)
+}
 
+const res = taskList.render(mockTaskListResponse1.data.tasks);
+updateSpeeds(res)
 
-// taskList.render([demoResponse.data.tasks[0]]);
-// taskList.render([]);
-
-document.getElementById('totalDownloadSpeed').textContent = taskList.humanSpeedDownload
-document.getElementById('totalUploadSpeed').textContent = taskList.humanSpeedUpload
 document.getElementById('lastUpdateTime').textContent =
-    `${__('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
+    `${chrome.i18n.getMessage('lastUpdate')}: ${(new Date).toLocaleTimeString()}`;
 
 let currentDownloads = [];
 

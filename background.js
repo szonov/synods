@@ -1,5 +1,3 @@
-import {getMessage as __} from './lib/i18n.js'
-
 chrome.runtime.onInstalled.addListener(() => {
   // Create context menu
   chrome.contextMenus.create({
@@ -33,9 +31,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case "login":
       setTimeout(() => {
         if (Math.random() >= 0.5) {
-          sendResponse({success: true, message: __('loginSuccess')});
+          sendResponse({success: true, message: chrome.i18n.getMessage('loginSuccess')});
         } else {
-          sendResponse({success: false, message: __('operationError', 'Connection failed')});
+          sendResponse({success: false, message: chrome.i18n.getMessage('operationError', 'Connection failed')});
         }
       }, 4000)
       break;
