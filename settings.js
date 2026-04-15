@@ -1,3 +1,4 @@
+import { login } from "./lib/api.js";
 import { applyI18n } from "./lib/i18n.js";
 import Status from "./lib/status.js";
 import * as STORAGE from "./lib/storage.js";
