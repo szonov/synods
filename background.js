@@ -1,19 +1,21 @@
 import { useApi } from "./lib/api.js";
+import IconBadge from "./lib/badge.js";
+
+const badge = new IconBadge();
 
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {
-  setInitialBadge();
+  badge.autodetect();
 });
 
 // Events are triggered when an extension is installed for the first time or updated.
 chrome.runtime.onInstalled.addListener(() => {
-  // Create context menu
   chrome.contextMenus.create({
     id: "addToSynology",
     title: chrome.i18n.getMessage("contextMenuAdd"),
     contexts: ["link", "audio", "video", "image"],
   });
-  setInitialBadge();
+  badge.autodetect();
 });
 
 // Handle context menu click
@@ -21,29 +23,34 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId !== "addToSynology") {
     return;
   }
+
   const downloadUrl = info.linkUrl ?? info.srcUrl ?? "";
   if (!downloadUrl) {
     return;
   }
 
-  console.log("Adding to Synology: ... ", downloadUrl);
-
   useApi().then(async (api) => {
+    if (!api.hasAccountData) {
+      await chrome.runtime.openOptionsPage();
+      return;
+    }
+
     const response = await api.createTask(downloadUrl);
+
     if (response.success) {
+      badge.increment();
       await chrome.notifications.create({
         type: "basic",
-        iconUrl: "icons/icon48.png",
-        title: "New download added",
+        iconUrl: "icons/icon256-success.png",
+        title: chrome.i18n.getMessage("taskAdded"),
         message: downloadUrl,
       });
-      await updateBadge("increment");
     } else {
-      chrome.notifications.create({
+      await chrome.notifications.create({
         type: "basic",
-        iconUrl: "icons/icon48.png",
-        title: "ERROR: " + response.message,
-        message: downloadUrl,
+        iconUrl: "icons/icon256-error.png",
+        title: chrome.i18n.getMessage("failedToAddTask"),
+        message: response.error || downloadUrl,
       });
     }
   });
@@ -52,12 +59,17 @@ chrome.contextMenus.onClicked.addListener((info) => {
 // handle messages from popup or settings pages
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.action) {
+    case "reset":
+      badge.reset();
+      break;
+
     case "login":
       useApi()
         .then((api) => api.login())
         .then((response) => {
           sendResponse(response);
-          updateBadge(response.success ? "api" : -1);
+          if (response.success) badge.loadFromApi();
+          else badge.setErrorState();
         });
       break;
 
@@ -66,7 +78,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         .then((api) => api.getTasks())
         .then((response) => {
           sendResponse(response);
-          updateBadge(response.success ? response.data.total : -1);
+          if (response.success) badge.update(response.data.total);
+          else badge.setErrorState();
         });
       break;
 
@@ -90,48 +103,3 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   return true;
 });
-
-function badge(text = "", color = "#ffffff") {
-  chrome.action.setBadgeText({ text });
-  chrome.action.setBadgeBackgroundColor({ color });
-}
-
-function setBadgeCount(count) {
-  if (count < 0) badge("!", "#C43B38");
-  else if (count > 0) badge(String(count), "#0d8050");
-  else badge();
-}
-
-/**
- * Set correct number or text to badge
- * Possible values:
- *  'api': counter should be loaded from api
- *  'increment': counter should be incremented by one
- *  -1: errored counter
- *  0+: exact counter value
- *
- * @param {number|string} value
- * @returns {Promise<{success: boolean}>}
- */
-function updateBadge(value) {
-  if (value === "increment") {
-    chrome.action.getBadgeText({}, (result) => {
-      const c = parseInt(result);
-      setBadgeCount(isNaN(c) ? 1 : c + 1);
-    });
-  } else if (value === "api") {
-    useApi()
-      .then((api) => api.getTasksCount())
-      .then((count) => setBadgeCount(count));
-  } else {
-    setBadgeCount(value);
-  }
-}
-
-function setInitialBadge() {
-  useApi().then((api) => {
-    if (api.isLoggedIn) updateBadge("api");
-    else if (api.hasAccountData) updateBadge(-1);
-    else updateBadge(0);
-  });
-}

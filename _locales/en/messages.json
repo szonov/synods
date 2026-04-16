@@ -5,14 +5,17 @@
   "extDesc": {
     "message": "Manage Synology Download Station from your browser"
   },
-  "extSettingsTitle": {
-    "message": "Settings - Synology Download Manager"
-  },
   "contextMenuAdd": {
     "message": "Add to Synology Download Station"
   },
   "taskAdded": {
     "message": "Download task added successfully"
+  },
+  "failedToAddTask": {
+    "message": "Failed to add download"
+  },
+  "extSettingsTitle": {
+    "message": "Settings - Synology Download Manager"
   },
   "settingsSaved": {
     "message": "Settings saved, connection checking in progress..."

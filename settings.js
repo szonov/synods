@@ -69,6 +69,7 @@ async function clearSettings(e) {
   await loadSettings();
 
   status.success(chrome.i18n.getMessage("clearSettingsSuccess"));
+  chrome.runtime.sendMessage({ action: "reset" });
 }
 
 function validateInput({ host, account, passwd }) {

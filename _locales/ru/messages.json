@@ -5,14 +5,17 @@
   "extDesc": {
     "message": "Управляйте Synology Download Station из браузера"
   },
-  "extSettingsTitle": {
-    "message": "Настройки - Менеджер загрузок Synology"
-  },
   "contextMenuAdd": {
     "message": "Добавить в Synology Download Station"
   },
   "taskAdded": {
-    "message": "Задача загрузки успешно добавлена"
+    "message": "Загрузка добавлена"
+  },
+  "failedToAddTask": {
+    "message": "Не удалось добавить загрузку"
+  },
+  "extSettingsTitle": {
+    "message": "Настройки - Менеджер загрузок Synology"
   },
   "settingsSaved": {
     "message": "Настройки сохранены, идет проверка соединения..."
