@@ -5,11 +5,20 @@
   "extDesc": {
     "message": "Manage Synology Download Station from your browser"
   },
+  "checkYourSettings": {
+    "message": "Please check your settings"
+  },
+  "configRequired": {
+    "message": "The extension needs to be configured. Go to Settings and enter the host, account, and password for your Synology."
+  },
+  "noActiveTasks": {
+    "message": "There are no active download tasks."
+  },
   "contextMenuAdd": {
     "message": "Add to Synology Download Station"
   },
   "taskAdded": {
-    "message": "Download task added successfully"
+    "message": "Download task added"
   },
   "failedToAddTask": {
     "message": "Failed to add download"

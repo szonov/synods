@@ -5,6 +5,15 @@
   "extDesc": {
     "message": "Управляйте Synology Download Station из браузера"
   },
+  "checkYourSettings": {
+    "message": "Пожалуйста, проверьте свои настройки"
+  },
+  "configRequired": {
+    "message": "Расширение необходимо настроить. Перейдите в настройки и укажите хост, аккаунт и пароль от вашего Synology."
+  },
+  "noActiveTasks": {
+    "message": "Нет активных задач загрузки"
+  },
   "contextMenuAdd": {
     "message": "Добавить в Synology Download Station"
   },

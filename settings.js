@@ -1,5 +1,5 @@
 import { applyI18n } from "./lib/i18n.js";
-import Status from "./lib/status.js";
+import Status from "./lib/settings-status.js";
 
 const $form = document.querySelector("form");
 const $host = document.getElementById("host");
