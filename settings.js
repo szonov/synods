@@ -1,7 +1,5 @@
-import { login } from "./lib/api.js";
 import { applyI18n } from "./lib/i18n.js";
 import Status from "./lib/status.js";
-import * as STORAGE from "./lib/storage.js";
 
 const $form = document.querySelector("form");
 const $host = document.getElementById("host");
@@ -20,7 +18,11 @@ $clearBtn.addEventListener("click", clearSettings);
 await loadSettings();
 
 async function loadSettings() {
-  const settings = await STORAGE.get();
+  const settings = await chrome.storage.local.get({
+    host: "",
+    account: "",
+    passwd: "",
+  });
 
   $host.value = settings.host;
   $username.value = settings.account;
@@ -41,7 +43,7 @@ async function saveSettings(e) {
     return;
   }
 
-  await STORAGE.set(settings);
+  await chrome.storage.local.set(settings);
 
   status.neutral(chrome.i18n.getMessage("settingsSaved"), 10000);
 
@@ -63,7 +65,7 @@ async function clearSettings(e) {
     return;
   }
 
-  await STORAGE.clear();
+  await chrome.storage.local.clear();
   await loadSettings();
 
   status.success(chrome.i18n.getMessage("clearSettingsSuccess"));

@@ -19,22 +19,31 @@ Localization (i18n):
 Popup Interface:
 - Link to open Synology Download Station.
 - Link to open extension settings page.
+- Button to clear all finished/completed downloads.
 - List of downloads with options for each download: Remove, Pause, Resume.
 - Timestamp of the last list update.
+- Auto-refresh: When popup is open, download list automatically updates every 5 seconds.
 
 Context Menu:
 - Right-click on a link -> "Add to Synology Download Station"
 - Simple notification confirms task added.
 
-Performance:
+Performance & Requests:
 - No unnecessary API requests to Synology.
-- Data fetched ONLY when popup is open.
-- No background polling.
+- Data is fetched ONLY when the extension popup is open.
+- When popup is open, data auto-refreshes every 5 seconds.
+- No background polling when popup is closed.
 
 Technology Stack:
 - Manifest V3
 - Pure JavaScript (ES6+)
 - chrome.storage.local
 - HTML/CSS (no frameworks)
-- Synology API: SYNO.DownloadStation.Task
-- i18n: Chrome _locales structure (auto-detected from browser)
+- Synology API: SYNO.API.Auth (authentication)
+- Synology API: SYNO.DownloadStation.Task (standard downloads)
+- Synology API: SYNO.DownloadStation2.Task (torrent downloads)
+
+Synology API Endpoints:
+- Authentication: SYNO.API.Auth (login)
+- Standard Downloads: SYNO.DownloadStation.Task (list, create, pause, resume, delete)
+- Torrent Downloads: SYNO.DownloadStation2.Task (list, create, pause, resume, delete)
