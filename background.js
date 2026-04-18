@@ -1,11 +1,8 @@
-import { useApi } from "./lib/api.js";
-import IconBadge from "./lib/badge.js";
-
-const badge = new IconBadge();
+import { useService } from "./lib/background_service.js";
 
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {
-  badge.autodetect();
+  useService().then((s) => s.initializeBadge());
 });
 
 // Events are triggered when an extension is installed for the first time or updated.
@@ -15,7 +12,7 @@ chrome.runtime.onInstalled.addListener(() => {
     title: chrome.i18n.getMessage("contextMenuAdd"),
     contexts: ["link", "audio", "video", "image"],
   });
-  badge.autodetect();
+  useService().then((s) => s.initializeBadge());
 });
 
 // Handle context menu click
@@ -23,83 +20,58 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId !== "addToSynology") {
     return;
   }
-
   const downloadUrl = info.linkUrl ?? info.srcUrl ?? "";
   if (!downloadUrl) {
     return;
   }
-
-  useApi().then(async (api) => {
-    if (!api.hasAccountData) {
-      await chrome.runtime.openOptionsPage();
-      return;
-    }
-
-    const response = await api.createTask(downloadUrl);
-
-    if (response.success) {
-      badge.increment();
-      await chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icons/icon256-success.png",
-        title: chrome.i18n.getMessage("taskAdded"),
-        message: downloadUrl,
-      });
-    } else {
-      await chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icons/icon256-error.png",
-        title: chrome.i18n.getMessage("failedToAddTask"),
-        message: response.error || downloadUrl,
-      });
-    }
-  });
+  useService().then((s) => s.createDownloadTask(downloadUrl));
 });
 
 // handle messages from popup or settings pages
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  switch (msg.action) {
-    case "reset":
-      badge.reset();
-      break;
+  const action = msg.action;
+  const data = msg.data || {};
 
-    case "login":
-      useApi()
-        .then((api) => api.login())
-        .then((response) => {
-          sendResponse(response);
-          if (response.success) badge.loadFromApi();
-          else badge.setErrorState();
-        });
-      break;
+  // console.log(`[background] Received message [${action}]`, data);
+  switch (action) {
 
-    case "tasks":
-      useApi()
-        .then((api) => api.getTasks())
-        .then((response) => {
-          sendResponse(response);
-          if (response.success) badge.update(response.data.total);
-          else badge.setErrorState();
-        });
-      break;
+    case "get-host":
+      useService().then((s) => sendResponse(s.getHost()));
+      return true;
+
+    case "get-settings":
+      useService().then((s) => sendResponse(s.getSettings()));
+      return true;
+
+    case "latest-tasks":
+      useService().then((s) => s.latestTasks());
+      return;
+
+    case "new-tasks":
+      useService().then((s) => s.newTasks());
+      return;
 
     case "resume":
-      useApi()
-        .then((api) => api.resumeTask(msg.data.id))
-        .then(sendResponse);
-      break;
-
+      useService().then((s) => s.resumeTask(data.id));
+      return;
     case "pause":
-      useApi()
-        .then((api) => api.pauseTask(msg.data.id))
-        .then(sendResponse);
-      break;
+      useService().then((s) => s.pauseTask(data.id));
+      return;
 
     case "delete":
-      useApi()
-        .then((api) => api.deleteTask(msg.data.id))
+      useService().then((s) => s.deleteTask(data.id));
+      return;
+
+    case "login":
+      useService()
+        .then((s) => s.login(data))
         .then(sendResponse);
-      break;
+      return true;
+
+    case "logout":
+      useService()
+        .then((s) => s.logout())
+        .then(sendResponse);
+      return true;
   }
-  return true;
 });

@@ -11,15 +11,6 @@
   <header>
     <h1 data-i18n="extName">Synology Download Manager</h1>
 
-    <a href="#" id="clearAllBtn" data-i18n="title,clearAll" class="clear-icon">
-      <svg fill="currentColor" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-        <g>
-          <path d="M63.336,43.333H53.334V16.667c0-3.682-2.986-6.667-6.667-6.667C42.988,10,40,12.985,40,16.667v26.67H30 c-3.682,0-6.666,2.981-6.666,6.663v6.667H70V50C70,46.318,67.018,43.333,63.336,43.333z"/>
-          <path d="M23.333,90h53.333C72.221,85.554,70,79.727,70,73.899V61.667H23.333V90z"/>
-        </g>
-      </svg>
-    </a>
-
     <a href="#" id="openDsmBtn" data-i18n="title,openDsm">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 3h6v6"/>
@@ -104,11 +95,12 @@
         <progress data-progress max="100" value="0" style="width: 100%">0%</progress>
       </div>
     </template>
+    <div id="loader" class="empty">Loading...</div>
     <div id="noActiveTasks" class="empty d-none" data-i18n="noActiveTasks"></div>
     <div id="configRequired" class="empty d-none" data-i18n="configRequired"></div>
   </div>
 
-  <div id="errorLine" class="error-line"></div>
+  <div id="errorLine" class="error-line d-none"></div>
 
   <footer id="footer">
     <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

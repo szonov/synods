@@ -26,8 +26,8 @@
   "extSettingsTitle": {
     "message": "Settings - Synology Download Manager"
   },
-  "settingsSaved": {
-    "message": "Settings saved, connection checking in progress..."
+  "settingsSaving": {
+    "message": "Connection checking in progress..."
   },
   "hostLabel": {
     "message": "Synology Host"

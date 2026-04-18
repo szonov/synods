@@ -26,8 +26,8 @@
   "extSettingsTitle": {
     "message": "Настройки - Менеджер загрузок Synology"
   },
-  "settingsSaved": {
-    "message": "Настройки сохранены, идет проверка соединения..."
+  "settingsSaving": {
+    "message": "Идет проверка соединения с новыми настройками..."
   },
   "hostLabel": {
     "message": "Хост Synology"

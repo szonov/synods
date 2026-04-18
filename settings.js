@@ -1,5 +1,6 @@
 import { applyI18n } from "./lib/i18n.js";
 import Status from "./lib/settings-status.js";
+import {sendMessage} from "./lib/shared.js";
 
 const $form = document.querySelector("form");
 const $host = document.getElementById("host");
@@ -15,19 +16,11 @@ applyI18n();
 $form.addEventListener("submit", saveSettings);
 $clearBtn.addEventListener("click", clearSettings);
 
-await loadSettings();
+const settings = await sendMessage("get-settings")
 
-async function loadSettings() {
-  const settings = await chrome.storage.local.get({
-    host: "",
-    account: "",
-    passwd: "",
-  });
-
-  $host.value = settings.host;
-  $username.value = settings.account;
-  $password.value = settings.passwd;
-}
+$host.value = settings.host;
+$username.value = settings.account;
+$password.value = settings.passwd;
 
 async function saveSettings(e) {
   e.preventDefault();
@@ -36,26 +29,20 @@ async function saveSettings(e) {
     host: $host.value.trim(),
     account: $username.value.trim(),
     passwd: $password.value,
-    sid: "", // important clear sid here
   };
 
   if (!validateInput(settings)) {
     return;
   }
 
-  await chrome.storage.local.set(settings);
-
-  status.neutral(chrome.i18n.getMessage("settingsSaved"), 10000);
+  status.neutral(chrome.i18n.getMessage("settingsSaving"), 10000);
 
   disableForm(true);
-  const response = await chrome.runtime.sendMessage({ action: "login" });
+  const response = await sendMessage("login", settings);
   disableForm(false);
 
-  if (response.success) {
-    status.success(response.message);
-  } else {
-    status.error(response.message);
-  }
+  if (response.success) status.success(response.message);
+  else status.error(response.message);
 }
 
 async function clearSettings(e) {
@@ -65,11 +52,13 @@ async function clearSettings(e) {
     return;
   }
 
-  await chrome.storage.local.clear();
-  await loadSettings();
+  await chrome.runtime.sendMessage({ action: "logout" });
+
+  $host.value = "";
+  $username.value = "";
+  $password.value = "";
 
   status.success(chrome.i18n.getMessage("clearSettingsSuccess"));
-  chrome.runtime.sendMessage({ action: "reset" });
 }
 
 function validateInput({ host, account, passwd }) {

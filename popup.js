@@ -1,8 +1,16 @@
 import { applyI18n } from "./lib/i18n.js";
-import {humanSpeed, TaskList} from './lib/tasks.js';
-import { useState } from "./lib/popup-state.js";
+import { sendMessage } from "./lib/shared.js";
+import { humanSpeed, TaskList } from "./lib/tasks.js";
 
+const REFRESH_INTERVAL = 5000;
 let refreshTimer = 0;
+
+const refresh = async () => await sendMessage("new-tasks");
+
+const scheduleRefresh = () => {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(refresh, REFRESH_INTERVAL);
+};
 
 const $el = (id) => document.getElementById(id);
 
@@ -13,48 +21,26 @@ const $class = (id, className, useCriteria) => {
 
 const $text = (id, text) => {
   $el(id).textContent = text;
-}
+};
 
 applyI18n();
 
-const taskList = new TaskList($el('downloadsList'), $el('downloadTemplate'));
-let state = await useState()
-
+const taskList = new TaskList($el("downloadsList"), $el("downloadTemplate"));
 taskList.onEvent(handleTaskAction);
-state.onChange(handleStateChanges)
 
-handleStateChanges(state.get())
-
-$el('clearAllBtn').addEventListener("click", handleClearAllClick);
-$el('openDsmBtn').addEventListener("click", handleOpenDsmClick);
-$el('openSettingsBtn').addEventListener("click", handleOpenSettingsClick);
-
+$el("openDsmBtn").addEventListener("click", handleOpenDsmClick);
+$el("openSettingsBtn").addEventListener("click", handleOpenSettingsClick);
+//
 async function handleTaskAction(action, id) {
-  clearTimeout(refreshTimer);
-  await chrome.runtime.sendMessage({ action, data: { id } });
-  await refreshTasks();
-}
-
-async function handleClearAllClick(e) {
-  e.preventDefault();
-  if (!state.hasFinishedTasks) {
-    return;
-  }
-
-  const ids = taskList.getFinishedTaskIds()
-
-  if (ids.length > 0) {
-    clearTimeout(refreshTimer);
-    await chrome.runtime.sendMessage({action: "delete", data: {id: ids.join(",")}});
-    await refreshTasks();
-  }
+  await sendMessage(action, { id });
 }
 
 async function handleOpenDsmClick(e) {
   e.preventDefault();
-  if (state.host) {
+  const host = await sendMessage("get-host");
+  if (host) {
     await chrome.tabs.create({
-      url: `${state.host}/index.cgi?launchApp=SYNO.SDS.DownloadStation.Application`,
+      url: `${host}/index.cgi?launchApp=SYNO.SDS.DownloadStation.Application`,
       active: true,
     });
   } else {
@@ -67,63 +53,72 @@ async function handleOpenSettingsClick(e) {
   await chrome.runtime.openOptionsPage();
 }
 
-function handleNoActiveTacksVisibility() {
-  const visible = state.isLoggedIn && !state.hasTasks
-  $class('noActiveTasks', 'd-none', !visible)
-}
+const noAccount = function (show = true) {
+  $class("configRequired", "d-none", !show);
+  $class("footer", "d-none", show);
+};
+const hideLoader = function (hide = true) {
+  $class("loader", "d-none", hide);
+};
 
-async function refreshTasks() {
-  clearTimeout(refreshTimer);
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  const action = msg.action;
+  const data = msg.data || {};
+  // console.log(`[popup] Received message [${action}]`, data);
 
-  const response = await chrome.runtime.sendMessage({ action: "tasks" });
-  state.set({error: response.success ? "" : response.success || "ERROR"});
+  let hideNoAccountDiv = true;
+  switch (action) {
+    case "lock-task":
+      taskList.lock(data.id);
+      break;
 
-  if (response.success) {
-    const totals = taskList.render(response.data.tasks);
-    state.set(totals);
-    $text('lastUpdateTime', new Date().toLocaleTimeString());
-    refreshTimer = setTimeout(refreshTasks, 5000);
-  } else {
-    refreshTimer = setTimeout(refreshTasks, 10000);
+    case "unlock-task":
+      taskList.unlock(data.id);
+      break;
+
+    case "missing-config":
+      clearTimeout(refreshTimer);
+      hideLoader();
+
+      taskList.render([]);
+      $text("totalDownloadSpeed", humanSpeed(""));
+      $text("totalUploadSpeed", humanSpeed(""));
+      $text("lastUpdateTime", "--");
+      $class("noActiveTasks", "d-none", true);
+      $class("errorLine", "d-none", true);
+
+      noAccount(true);
+      return;
+
+    case "app-error":
+    case "api-error":
+      $text("errorLine", data.message);
+      $class("errorLine", "d-none", false);
+      break;
+
+    case "task-list":
+      hideLoader();
+
+      const totals = taskList.render(data.tasks, data.locked);
+
+      $text("totalDownloadSpeed", humanSpeed(totals.speedDownload));
+      $text("totalUploadSpeed", humanSpeed(totals.speedUpload));
+      $text("lastUpdateTime", new Date(data.updatedAt * 1000).toLocaleTimeString());
+      $class("noActiveTasks", "d-none", data.total);
+
+      $class("errorLine", "d-none", true);
+
+      scheduleRefresh();
+      break;
+
+    default:
+      hideNoAccountDiv = false;
+      break;
   }
-}
 
-function handleStateChanges(changes) {
-  Object.keys(changes).forEach((key) => {
-    const value = changes[key];
-    switch (key) {
+  if (hideNoAccountDiv) {
+    noAccount(false);
+  }
+});
 
-      case "hasFinishedTasks":
-        $class('clearAllBtn', 'disabled', !value);
-        break;
-
-      case "speedDownload":
-        $text('totalDownloadSpeed', humanSpeed(value));
-        break;
-
-      case "speedUpload":
-        $text('totalUploadSpeed', humanSpeed(value));
-        break;
-
-      case "hasTasks":
-        handleNoActiveTacksVisibility()
-        break;
-
-      case "isLoggedIn":
-        handleNoActiveTacksVisibility()
-        if (value) refreshTasks().then(() => {});
-        else clearTimeout(refreshTimer);
-        break;
-
-      case "hasAccountData":
-        $class('configRequired', 'd-none', value)
-        $class('footer', 'd-none', !value)
-        break;
-
-      case 'error':
-        $text('errorLine', value);
-        $class('errorLine', 'd-none', !value)
-        break;
-    }
-  })
-}
+await sendMessage("latest-tasks");

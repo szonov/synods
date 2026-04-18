@@ -38,15 +38,15 @@ header {
             width: 20px;
             height: 20px;
         }
-        &.clear-icon {
-            margin-right: 15px;
-        }
+        /*&.clear-icon {*/
+        /*    margin-right: 15px;*/
+        /*}*/
 
         &:hover {
             color: #1a73e8;
-            &.clear-icon {
-                color: red;
-            }
+            /*&.clear-icon {*/
+            /*    color: red;*/
+            /*}*/
         }
 
         &.disabled {
@@ -144,6 +144,14 @@ footer {
 
     .task-item {
         padding: 8px 12px;
+
+        &.locked {
+            opacity: 0.3;
+            background: #EEC!important;
+            [data-action] {
+                display: none;
+            }
+        }
 
         &:hover {
             background: #eee;

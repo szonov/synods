@@ -19,7 +19,6 @@ Localization (i18n):
 Popup Interface:
 - Link to open Synology Download Station.
 - Link to open extension settings page.
-- Button to clear all finished/completed downloads.
 - List of downloads with options for each download: Remove, Pause, Resume.
 - Timestamp of the last list update.
 - Auto-refresh: When popup is open, download list automatically updates every 5 seconds.
