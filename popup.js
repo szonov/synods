@@ -2,7 +2,7 @@ import { applyI18n } from "./lib/i18n.js";
 import { sendMessage } from "./lib/shared.js";
 import { humanSpeed, TaskList } from "./lib/tasks.js";
 
-const REFRESH_INTERVAL = 5000;
+const REFRESH_INTERVAL = 15000;
 let refreshTimer = 0;
 
 const refresh = async () => await sendMessage("new-tasks");
