@@ -4,37 +4,20 @@
   <meta charset="UTF-8"/>
   <title data-i18n="extSettingsTitle">Settings - Synology Download Manager</title>
   <link rel="stylesheet" href="settings.css"/>
-  <script src="settings.js" type="module"></script>
+  <script src="webcomponents/login-form.js" defer></script>
+  <script src="webcomponents/clear-settings.js" defer></script>
+  <script src="settings.js" defer></script>
 </head>
 
 <body>
-<form action="" class="container" id="form">
+<div class="login-container">
   <h1 data-i18n="extName">Synology Download Manager</h1>
   <h2 data-i18n="openSettings">Settings</h2>
+  <login-form></login-form>
+</div>
 
-  <div class="form-group">
-    <label for="host" data-i18n="hostLabel">Synology Host</label>
-    <input type="text" id="host" placeholder="https://your-synology:5001"/>
-  </div>
-
-  <div class="form-group">
-    <label for="username" data-i18n="usernameLabel">Username</label>
-    <input type="text" id="username"/>
-  </div>
-
-  <div class="form-group">
-    <label for="password" data-i18n="passwordLabel">Password</label>
-    <input type="password" id="password"/>
-  </div>
-
-  <div class="action-group">
-    <button type="submit" id="saveBtn" data-i18n="saveBtn">Save</button>
-    <span id="status"></span>
-  </div>
-</form>
-
-<div class="action-delete">
-  <a href="#" id="clearBtn" data-i18n="clearSettings">Clear settings</a>
+<div class="clear-container">
+  <clear-settings></clear-settings>
 </div>
 
 </body>

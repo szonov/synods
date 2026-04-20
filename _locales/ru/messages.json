@@ -27,7 +27,7 @@
     "message": "Настройки - Менеджер загрузок Synology"
   },
   "settingsSaving": {
-    "message": "Идет проверка соединения с новыми настройками..."
+    "message": "Идет проверка соединения ..."
   },
   "hostLabel": {
     "message": "Хост Synology"
