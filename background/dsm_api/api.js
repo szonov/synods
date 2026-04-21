@@ -254,13 +254,14 @@ export class Api {
     const response = await fetchFn();
 
     // may be expired session?
-    if (!loginDone && !response.success && [105, 119, 400].includes(response.error?.code)) {
-      const loginResponse = await this.login(signal);
-      if (!loginResponse.success) {
-        return loginResponse;
+    if (!loginDone && !response.success) {
+      if (response.type === "api-error" && [105, 119, 400].includes(response.code)) {
+        const loginResponse = await this.login(signal);
+        if (!loginResponse.success) {
+          return loginResponse;
+        }
+        return await fetchFn();
       }
-
-      return await fetchFn();
     }
 
     return response;
