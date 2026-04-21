@@ -1,13 +1,19 @@
-customElements.get("clear-settings") || customElements.define("clear-settings", class extends HTMLElement {
+customElements.define("clear-settings", class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = `
       <style>
       div {
+        max-width: 500px;
+        margin: 18px auto;
+        text-align: center;
+      }
+      span {
         cursor: pointer;
         text-decoration: underline;
         color: #C43B38;
+        display: inline-block;
         &.disabled {
           color: #888;
           text-decoration: none;
@@ -16,17 +22,20 @@ customElements.get("clear-settings") || customElements.define("clear-settings", 
       }
       </style>
       <div>
-          ${chrome.i18n.getMessage("clearSettings")}
+        <span>
+            ${chrome.i18n.getMessage("clearSettings")}
+        </span>
       </div>
+
     `;
   }
 
   connectedCallback() {
-    this.shadowRoot.querySelector("div").addEventListener("click", this.submit.bind(this));
+    this.shadowRoot.querySelector("span").addEventListener("click", this.submit.bind(this));
   }
 
   _disable(disabled) {
-    this.shadowRoot.querySelector("div").className = disabled ? "disabled" : "";
+    this.shadowRoot.querySelector("span").className = disabled ? "disabled" : "";
   }
   disable() {
     this._disable(true)
@@ -39,7 +48,7 @@ customElements.get("clear-settings") || customElements.define("clear-settings", 
     if (e && e.preventDefault) {
       e.preventDefault();
     }
-    if (this.shadowRoot.querySelector("div").className === "disabled") {
+    if (this.shadowRoot.querySelector("span").className === "disabled") {
       return;
     }
     if (!confirm(chrome.i18n.getMessage("clearSettingsConfirm"))) {

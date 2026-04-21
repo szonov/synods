@@ -8,7 +8,10 @@
   "checkYourSettings": {
     "message": "Please check your settings"
   },
-  "configRequired": {
+  "loading": {
+    "message": "Loading ..."
+  },
+  "missingConfig": {
     "message": "The extension needs to be configured. Go to Settings and enter the host, account, and password for your Synology."
   },
   "noActiveTasks": {
@@ -74,9 +77,6 @@
   },
   "openSettings": {
     "message": "Settings"
-  },
-  "clearAll": {
-    "message": "Clear finished tasks"
   },
   "lastUpdate": {
     "message": "Last update"
@@ -176,8 +176,5 @@
   },
   "noDownloads": {
     "message": "No active downloads"
-  },
-  "errorFetching": {
-    "message": "Error fetching downloads"
   }
 }

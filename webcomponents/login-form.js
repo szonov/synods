@@ -1,4 +1,4 @@
-customElements.get("login-form") || customElements.define("login-form", class extends HTMLElement {
+customElements.define("login-form", class extends HTMLElement {
   constructor() {
     super();
     this._defaultTimeout = 4000;
@@ -14,6 +14,28 @@ customElements.get("login-form") || customElements.define("login-form", class ex
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        h1 {
+          font-size: 20px;
+          padding: 16px 0 16px 52px;
+          border-bottom: 1px solid #ddd;
+          background: no-repeat 12px 12px url("../icons/icon32.png");
+        }
+        h2 {
+          font-size: 16px;
+          color: #5f6368;
+          padding: 8px 16px;
+        }
+        form {
+          padding: 0 16px 16px 16px;
+        }
       }
 
       .form-group {
@@ -63,24 +85,29 @@ customElements.get("login-form") || customElements.define("login-form", class ex
         }
       }
       </style>
-      <form>
-        <div class="form-group">
-          <label for="host">${chrome.i18n.getMessage('hostLabel')}</label>
-          <input type="text" id="host" placeholder="https://your-synology:5001"/>
-        </div>
-        <div class="form-group">
-          <label for="account">${chrome.i18n.getMessage('usernameLabel')}</label>
-          <input type="text" id="account"/>
-        </div>
-        <div class="form-group">
-          <label for="passwd">${chrome.i18n.getMessage('passwordLabel')}</label>
-          <input type="password" id="passwd"/>
-        </div>
-        <div class="action-group">
-          <button type="submit">${chrome.i18n.getMessage('saveBtn')}</button>
-          <span id="status"></span>
-        </div>
-      </form>`;
+      <div class="container">
+        <h1>${chrome.i18n.getMessage('extName')}</h1>
+        <h2>${chrome.i18n.getMessage('openSettings')}</h2>
+        <form>
+          <div class="form-group">
+            <label for="host">${chrome.i18n.getMessage('hostLabel')}</label>
+            <input type="text" id="host" placeholder="https://your-synology:5001"/>
+          </div>
+          <div class="form-group">
+            <label for="account">${chrome.i18n.getMessage('usernameLabel')}</label>
+            <input type="text" id="account"/>
+          </div>
+          <div class="form-group">
+            <label for="passwd">${chrome.i18n.getMessage('passwordLabel')}</label>
+            <input type="password" id="passwd"/>
+          </div>
+          <div class="action-group">
+            <button type="submit">${chrome.i18n.getMessage('saveBtn')}</button>
+            <span id="status"></span>
+          </div>
+        </form>
+      </div>
+      `;
   }
 
   connectedCallback() {

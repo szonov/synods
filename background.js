@@ -1,4 +1,4 @@
-import { useService } from "./lib/background_service.js";
+import { useService } from "./background/service.js";
 
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {

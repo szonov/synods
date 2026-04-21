@@ -8,7 +8,10 @@
   "checkYourSettings": {
     "message": "Пожалуйста, проверьте свои настройки"
   },
-  "configRequired": {
+  "loading": {
+    "message": "Идет загрузка списка..."
+  },
+  "missingConfig": {
     "message": "Расширение необходимо настроить. Перейдите в настройки и укажите хост, аккаунт и пароль от вашего Synology."
   },
   "noActiveTasks": {
@@ -74,9 +77,6 @@
   },
   "openSettings": {
     "message": "Настройки"
-  },
-  "clearAll": {
-    "message": "Очистить выполненные задачи"
   },
   "lastUpdate": {
     "message": "Последнее обновление"
@@ -177,8 +177,5 @@
   },
   "noDownloads": {
     "message": "Нет активных загрузок"
-  },
-  "errorFetching": {
-    "message": "Ошибка получения загрузок"
   }
 }

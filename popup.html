@@ -1,132 +1,36 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <title>Synology Download Manager</title>
-  <link rel="stylesheet" href="popup.css"/>
-  <script src="popup.js" type="module"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 450px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      background: #fbfbfb;
+    }
+  </style>
+
+  <script src="webcomponents/popup-header.js" defer></script>
+  <script src="webcomponents/popup-footer.js" defer></script>
+  <script src="webcomponents/state-message.js" defer></script>
+  <script src="webcomponents/error-line.js" defer></script>
+  <script src="webcomponents/task-utils.js" defer></script>
+  <script src="webcomponents/task-item.js" defer></script>
+  <script src="webcomponents/task-list.js" defer></script>
+  <script src="popup.js" defer></script>
 </head>
-<body class="">
-<div class="container">
-  <header>
-    <h1 data-i18n="extName">Synology Download Manager</h1>
-
-    <a href="#" id="openDsmBtn" data-i18n="title,openDsm">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 3h6v6"/>
-        <path d="M10 14 21 3"/>
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-      </svg>
-    </a>
-
-    <a href="#" id="openSettingsBtn" data-i18n="title,openSettings">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/>
-        <circle cx="12" cy="12" r="2"/>
-      </svg>
-    </a>
-  </header>
-
-  <div id="downloadsList" class="downloads-list">
-    <template id="downloadTemplate">
-      <div class="row">
-        <div class="info">
-          <span data-title>Download Title</span><br/>
-          <span data-status-message>Status line</span>
-          <div data-status-icon>x</div>
-        </div>
-        <div class="actions">
-          <a href="" data-action="resume">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"
-              />
-            </svg>
-          </a>
-
-          <a href="" data-action="pause">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="14" y="3" width="5" height="18" rx="1"/>
-              <rect x="5" y="3" width="5" height="18" rx="1"/>
-            </svg>
-          </a>
-
-          <a href="" data-action="delete">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"/>
-              <path d="m15 9-6 6"/>
-              <path d="m9 9 6 6"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <div class="row">
-        <progress data-progress max="100" value="0" style="width: 100%">0%</progress>
-      </div>
-    </template>
-    <div id="loader" class="empty">Loading...</div>
-    <div id="noActiveTasks" class="empty d-none" data-i18n="noActiveTasks"></div>
-    <div id="configRequired" class="empty d-none" data-i18n="configRequired"></div>
-  </div>
-
-  <div id="errorLine" class="error-line d-none"></div>
-
-  <footer id="footer">
-    <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <path d="M12 5l0 14"/>
-      <path d="M18 13l-6 6"/>
-      <path d="M6 13l6 6"/>
-    </svg>
-
-    <span id="totalDownloadSpeed"> –.– B/s</span>
-
-    <span class="spacer"></span>
-
-    <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <path d="M12 5l0 14"/>
-      <path d="M18 11l-6 -6"/>
-      <path d="M6 11l6 -6"/>
-    </svg>
-
-    <span id="totalUploadSpeed"> –.– B/s</span>
-
-    <span class="last-update-box">
-      <span data-i18n="lastUpdate"></span>: <span id="lastUpdateTime"> –– </span>
-    </span>
-  </footer>
-</div>
+<body>
+  <popup-header></popup-header>
+  <state-message></state-message>
+  <task-list></task-list>
+  <error-line></error-line>
+  <popup-footer></popup-footer>
 </body>
 </html>

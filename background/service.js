@@ -7,9 +7,27 @@
  *
  */
 
-import { setBadge } from "./badge.js";
 import { Api } from "./dsm_api/api.js";
-import { sendMessage } from "./shared.js";
+
+async function sendMessage(action, data) {
+  // console.log(`[sendMessage.${action}]`, data);
+  try {
+    return await chrome.runtime.sendMessage({ action, data });
+  } catch (error) {
+    // console.log("[sendMessage.error] ", error);
+  }
+}
+
+async function setBadgeTextColor(text = "", color = "#ffffff") {
+  await chrome.action.setBadgeText({ text });
+  return await chrome.action.setBadgeBackgroundColor({ color });
+}
+
+function setBadge(count) {
+  if (count < 0) return setBadgeTextColor("!", "#C43B38");
+  else if (count > 0) return setBadgeTextColor(String(count), "#0d8050");
+  else return setBadgeTextColor();
+}
 
 /**
  * Main class for handling extension state
@@ -146,6 +164,7 @@ class BackgroundService {
         title: chrome.i18n.getMessage("taskAdded"),
         message: url,
       });
+      await this._refreshTasks();
     } else {
       await chrome.notifications.create({
         type: "basic",
@@ -154,7 +173,6 @@ class BackgroundService {
         message: response.message || url,
       });
     }
-    // TODO: refresh badge and list
   }
 
   updateSettings(settings) {
