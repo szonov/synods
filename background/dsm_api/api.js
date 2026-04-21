@@ -270,7 +270,7 @@ export class Api {
    * Call SYNO.DownloadStation.Task api method
    *
    * @param {string} method
-   * @param {{*}} data
+   * @param {*} data
    * @param {AbortSignal?} signal
    * @returns {ApiResponsePromise}
    */
