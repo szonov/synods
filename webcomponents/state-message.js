@@ -18,8 +18,10 @@
           padding: 20px;
         }
         </style>
-        <div>${MESSAGES['loading']}</div>
+        <div></div>
       `;
+
+      this.loading()
     }
 
     set(text, isVisible = true) {

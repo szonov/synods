@@ -1,4 +1,5 @@
-class TaskUtils {
+class Utils {
+
   /**
    * Make integer number from any value, if value invalid 0 returned
    *
@@ -69,9 +70,31 @@ class TaskUtils {
         map((w) => w.charAt(0).toUpperCase() + w.slice(1)).
         join(' ');
   }
+
+  static applyI18n(root) {
+    const elements = root.querySelectorAll("[data-i18n]");
+    elements.forEach((el) => {
+      let attribute = "",
+        key = el.getAttribute("data-i18n");
+
+      const parts = key.split(",", 2);
+      if (parts.length === 2) {
+        attribute = parts[0];
+        key = parts[1];
+      }
+
+      const message = chrome.i18n.getMessage(key);
+      if (message) {
+        if (attribute !== "") {
+          el.setAttribute(attribute, message);
+        } else {
+          el.textContent = message;
+        }
+      }
+    });
+  }
+
 }
-
-
 
 
 

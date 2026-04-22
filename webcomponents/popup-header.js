@@ -1,10 +1,5 @@
 (function () {
 
-  const ICONS = {
-    openDsm: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>`,
-    settings: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="2"/></svg>`,
-  }
-
   class PopupHeader extends HTMLElement {
     constructor() {
       super();
@@ -51,18 +46,21 @@
 
         </style>
         <div>
-          <h1>${chrome.i18n.getMessage('extName')}</h1>
+          <h1 data-i18n="extName">Synology Download Manager</h1>
 
-          <a href="#" data-action="dsm" title="${chrome.i18n.getMessage('openDsm')}">
-            ${ICONS['openDsm']}
+          <a href="#" data-action="dsm" data-i18n="title,openDsm">
+            <svg class="open-dsm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
           </a>
 
-          <a href="#" data-action="settings" title="${chrome.i18n.getMessage('openSettings')}">
-            ${ICONS['settings']}
+          <a href="#" data-action="settings" data-i18n="title,openSettings">
+            <svg class="settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="2"/></svg>
           </a>
         </div>
       `;
+
+      Utils.applyI18n(this.shadowRoot)
     }
+
     connectedCallback() {
       this.shadowRoot.querySelectorAll("[data-action]").forEach((elem) => {
         elem.addEventListener("click", async(e) => {

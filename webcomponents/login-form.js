@@ -86,28 +86,29 @@ customElements.define("login-form", class extends HTMLElement {
       }
       </style>
       <div class="container">
-        <h1>${chrome.i18n.getMessage('extName')}</h1>
-        <h2>${chrome.i18n.getMessage('openSettings')}</h2>
+        <h1 data-i18n="extName">Synology Download Manager</h1>
+        <h2 data-i18n="openSettings">Settings</h2>
         <form>
           <div class="form-group">
-            <label for="host">${chrome.i18n.getMessage('hostLabel')}</label>
+            <label for="host" data-i18n="hostLabel">Synology Host</label>
             <input type="text" id="host" placeholder="https://your-synology:5001"/>
           </div>
           <div class="form-group">
-            <label for="account">${chrome.i18n.getMessage('usernameLabel')}</label>
+            <label for="account" data-i18n="usernameLabel">Username</label>
             <input type="text" id="account"/>
           </div>
           <div class="form-group">
-            <label for="passwd">${chrome.i18n.getMessage('passwordLabel')}</label>
+            <label for="passwd" data-i18n="passwordLabel">Password</label>
             <input type="password" id="passwd"/>
           </div>
           <div class="action-group">
-            <button type="submit">${chrome.i18n.getMessage('saveBtn')}</button>
+            <button type="submit" data-i18n="saveBtn">Save</button>
             <span id="status"></span>
           </div>
         </form>
       </div>
       `;
+      Utils.applyI18n(this.shadowRoot)
   }
 
   connectedCallback() {

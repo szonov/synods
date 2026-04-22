@@ -1,0 +1,7 @@
+*~
+.idea
+.vscode
+.DS_Store
+.amo*
+/web-ext-artifacts
+.env

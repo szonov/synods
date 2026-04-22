@@ -22,12 +22,11 @@ customElements.define("clear-settings", class extends HTMLElement {
       }
       </style>
       <div>
-        <span>
-            ${chrome.i18n.getMessage("clearSettings")}
-        </span>
+        <span data-i18n="clearSettings">Clear Settings</span>
       </div>
-
     `;
+
+    Utils.applyI18n(this.shadowRoot)
   }
 
   connectedCallback() {

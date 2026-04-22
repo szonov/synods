@@ -1,10 +1,5 @@
 (function () {
 
-  const ICONS = {
-    down: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 13l-6 6"/><path d="M6 13l6 6"/></svg>`,
-    up: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 11l-6 -6"/><path d="M6 11l6 -6"/></svg>`,
-  }
-
   class PopupFooter extends HTMLElement {
     constructor() {
       super();
@@ -43,23 +38,23 @@
 
         </style>
         <div>
-          ${ICONS['down']}
+          <svg class="down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 13l-6 6"/><path d="M6 13l6 6"/></svg>
           <span data-value="speedDownload"> –.– B/s</span>
           <span class="spacer"></span>
-          ${ICONS['up']}
+          <svg class="up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 11l-6 -6"/><path d="M6 11l6 -6"/></svg>
           <span data-value="speedUpload"> –.– B/s</span>
           <span class="last-update-box">
-            ${chrome.i18n.getMessage('lastUpdate')}:
-            <span data-value="updatedAt"> –– </span>
+            <span data-i18n="lastUpdate"></span>: <span data-value="updatedAt"> –– </span>
           </span>
         </div>
       `;
+      Utils.applyI18n(this.shadowRoot)
     }
     setSpeedDownload(speed) {
-      this.shadowRoot.querySelector(`[data-value="speedDownload"]`).textContent = TaskUtils.humanSpeed(speed);
+      this.shadowRoot.querySelector(`[data-value="speedDownload"]`).textContent = Utils.humanSpeed(speed);
     }
     setSpeedUpload(speed) {
-      this.shadowRoot.querySelector(`[data-value="speedUpload"]`).textContent = TaskUtils.humanSpeed(speed);
+      this.shadowRoot.querySelector(`[data-value="speedUpload"]`).textContent = Utils.humanSpeed(speed);
     }
     setUpdatedAt(value) {
       this.shadowRoot.querySelector(`[data-value="updatedAt"]`).textContent = Number.isFinite(value)
