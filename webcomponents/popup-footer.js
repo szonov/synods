@@ -29,19 +29,17 @@
             color: #5f6368;
           }
 
-          svg {
-            width: 14px;
-            height: 14px;
-            margin: 0;
+          svg-icon {
+            display: flex;
           }
         }
 
         </style>
         <div>
-          <svg class="down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 13l-6 6"/><path d="M6 13l6 6"/></svg>
+          <svg-icon name="down" size="14"></svg-icon>
           <span data-value="speedDownload"> –.– B/s</span>
           <span class="spacer"></span>
-          <svg class="up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 11l-6 -6"/><path d="M6 11l6 -6"/></svg>
+          <svg-icon name="up" size="14"></svg-icon>
           <span data-value="speedUpload"> –.– B/s</span>
           <span class="last-update-box">
             <span data-i18n="lastUpdate"></span>: <span data-value="updatedAt"> –– </span>
@@ -62,11 +60,21 @@
       : "--";
     }
 
+    set(speedDownload, speedUpload, updatedAt) {
+      this.setSpeedDownload(speedDownload)
+      this.setSpeedUpload(speedUpload)
+      this.setUpdatedAt(updatedAt)
+
+      return this
+    }
+
     hide() {
       this.shadowRoot.querySelector('div').style.display = 'none';
+      return this;
     }
     show() {
       this.shadowRoot.querySelector('div').style.display = 'flex';
+      return this;
     }
   }
 

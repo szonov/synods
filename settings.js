@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  document.title = chrome.i18n.getMessage('extSettingsTitle');
-
   // DOM
   const $form = document.querySelector("login-form");
   const $clearBtn = document.querySelector("clear-settings");

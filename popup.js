@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  document.title = chrome.i18n.getMessage('extName');
-
   const REFRESH_INTERVAL = 5000;
   let refreshTimer = 0;
 
@@ -43,12 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         $stateMessage.missingConfig();
         $errorLine.hide();
-        $footer.hide();
-
         $taskList.update([]);
-        $footer.setSpeedDownload("")
-        $footer.setSpeedUpload("")
-        $footer.setUpdatedAt("")
+        $footer.set("", "", "").hide();
 
         return;
 
@@ -62,11 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $errorLine.hide();
 
         $taskList.update(data.tasks, data.locked);
-
-        $footer.setSpeedDownload($taskList.speedDownload)
-        $footer.setSpeedUpload($taskList.speedUpload)
-        $footer.setUpdatedAt(data.updatedAt)
-        $footer.show();
+        $footer.set($taskList.speedDownload, $taskList.speedUpload, data.updatedAt).show();
 
         (data.total) || $stateMessage.noActiveTasks()
 

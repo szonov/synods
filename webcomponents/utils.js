@@ -93,8 +93,9 @@ class Utils {
       }
     });
   }
-
 }
 
-
+document.addEventListener('DOMContentLoaded', () => {
+  Utils.applyI18n(document)
+})
 
