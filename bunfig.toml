@@ -1,0 +1,12 @@
+# bunfig.toml
+[serve]
+static = ["dist"]
+
+[test]
+preload = ["./test/setup.ts"]
+
+[jsx]
+# Используем кастомную реализацию
+jsxFactory = "createElement"
+jsxFragment = "Fragment"
+jsxImportSource = "./src/lib"

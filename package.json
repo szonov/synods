@@ -1,0 +1,16 @@
+{
+    "name": "synods",
+    "version": "1.0.2",
+    "type": "module",
+    "scripts": {
+        "build": "bun run build.js",
+        "watch": "bun run build.js --watch",
+        "clean": "rm -rf dist",
+        "dev": "bun run build.js --watch"
+    },
+    "devDependencies": {
+        "@types/chrome": "^0.0.246",
+        "@types/react": "^16.14.69",
+        "bun-types": "latest"
+    }
+}

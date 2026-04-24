@@ -5,3 +5,5 @@
 .amo*
 /web-ext-artifacts
 .env
+bun.lock
+/node_modules

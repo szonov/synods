@@ -1,0 +1,15 @@
+a {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #C43B38;
+    display: inline-block;
+    &.disabled {
+        color: #888;
+        text-decoration: none;
+        cursor: default;
+    }
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
