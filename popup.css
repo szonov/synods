@@ -1,0 +1,261 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    background: #fbfbfb;
+}
+
+main {
+    width: 450px;
+    margin: 0 auto;
+}
+
+.main-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 12px 8px 12px;
+    display: flex;
+
+    h1 {
+        flex-grow: 1;
+        padding-left: 24px;
+        font-size: 14px;
+        font-weight: 600;
+        background: no-repeat 0 1px url("./icons/icon16.png");
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    a {
+        text-decoration: none;
+        flex-grow: 0;
+        color: #ccc;
+        margin-left: 8px;
+
+        &:hover {
+            color: #1a73e8;
+        }
+    }
+}
+
+.main-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    color: #666;
+    border-top: 1px solid #e0e0e0;
+    .spacer {
+        margin-right: 8px;
+    }
+    .last-update-box {
+        margin-left: auto;
+        font-style: italic;
+        font-size: 10px;
+        color: #5f6368;
+    }
+    svg-icon {
+        display: flex;
+    }
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    overflow: auto;
+
+    .task-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 8px 12px;
+        height: 56px;
+
+        &:hover {
+            background: #eee;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .info {
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+
+                .title {
+                    font-size: 12px;
+                    line-height: 12px;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    margin-bottom: 3px;
+                }
+
+                .status {
+                    display: flex;
+                    align-items: center;
+
+                    svg-icon {
+                        flex-shrink: 0;
+                        flex-grow: 0;
+                        display: flex;
+                        align-items: center;
+                        width: 14px;
+                    }
+
+                    .subtitle {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        font-size: 10px;
+                    }
+                }
+            }
+
+            .actions {
+                flex-grow: 0;
+                flex-shrink: 0;
+
+                a {
+                    text-decoration: none;
+                    color: #ccc;
+                    margin-left: 8px;
+                    margin-right: 2px;
+
+                    &:hover {
+                        color: #1a73e8;
+
+                        &.delete {
+                            color: #d93025;
+                        }
+                    }
+                }
+            }
+        }
+
+        progress {
+            height: 10px;
+        }
+    }
+}
+
+.state-message {
+    text-align: center;
+    color: #5f6368;
+    padding: 20px;
+}
+
+.error-message {
+    background: #c43b38;
+    color: white;
+    text-align: center;
+    font-size: 11px;
+    padding: 2px 0;
+}
+
+.locked--true {
+    opacity: 0.3;
+    background: #EEC !important;
+}
+
+.status--waiting {
+    /* icon: "clock" */
+    .status-icon,
+    .subtitle {
+        color: #888;
+    }
+    progress {
+        accent-color: #888;
+    }
+}
+.status--downloading {
+    /* icon: "down" */
+    .subtitle {
+        color: #444;
+    }
+}
+.status--paused {
+    /* icon: "paused" */
+    .status-icon,
+    .subtitle {
+        color: #888;
+    }
+    progress {
+        accent-color: #888;
+    }
+}
+.status--finishing {
+    /* icon: "down" */
+    .subtitle {
+        color: #444;
+    }
+}
+.status--finished {
+    /* icon: "check" */
+    .status-icon {
+        color: #0d8050;
+    }
+    .subtitle {
+        color: #444;
+    }
+    progress {
+        accent-color: #0d8050;
+    }
+}
+.status--hash_checking {
+    /* icon: "down" */
+    .subtitle {
+        color: #444;
+    }
+}
+.status--seeding {
+    /* icon: "up" */
+    .subtitle {
+        color: #444;
+    }
+    progress {
+        accent-color: #9a7026;
+    }
+
+}
+.status--filehosting_waiting {
+    /* icon: "clock" */
+    .status-icon,
+    .subtitle {
+        color: #888;
+    }
+    progress {
+        accent-color: #888;
+    }
+}
+.status--extracting {
+    /* icon: "down" */
+    .status-icon {
+        color: #888;
+    }
+    .subtitle {
+        color: #444;
+    }
+    progress {
+        accent-color: #888;
+    }
+}
+.status--error {
+    /* icon: "triangle" */
+    .status-icon,
+    .subtitle {
+        color: #C43B38;
+    }
+    progress {
+        accent-color: #C43B38;
+    }
+}

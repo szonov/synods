@@ -1,22 +1,6 @@
-(function () {
-  const ICONS = [
-    "down",
-    "up",
-    "check",
-    "clock",
-    "triangle",
-    "paused",
-    "resume",
-    "pause",
-    "delete",
-    "external-link",
-    "settings",
-  ];
-
-  class SvgIcon extends HTMLElement {
+  export default class extends HTMLElement {
     constructor() {
       super();
-      this._name = "clock";
       this._size = 24;
     }
 
@@ -24,7 +8,7 @@
       this._updateHTML();
     }
 
-    static observedAttributes = ["size", "name"];
+    static observedAttributes = ["size", "name", "color"];
 
     attributeChangedCallback(name, oldValue, newValue) {
       if (name === "size" && oldValue !== newValue) {
@@ -33,11 +17,10 @@
           this._size = v;
           this._updateSize();
         }
-      } else if (name === "name" && oldValue !== newValue && ICONS.includes(newValue)) {
-        if (newValue !== this._name) {
-          this._name = newValue;
-          this._updateHTML();
-        }
+      } else if (name === "color" && oldValue !== newValue) {
+        this._updateColor();
+      } else if (name === "name" && oldValue !== newValue) {
+        this._updateHTML();
       }
     }
 
@@ -50,15 +33,23 @@
     }
 
     get name() {
-      return this._name;
+      return this.getAttribute("name") || "";
     }
 
     set name(value) {
       this.setAttribute("name", value);
     }
 
+    get color() {
+      return this.getAttribute("color") || "";
+    }
+
+    set color(value) {
+      this.setAttribute("color", value);
+    }
+
     _updateHTML() {
-      switch (this._name) {
+      switch (this.name) {
         case "down":
           this.innerHTML = `<svg class="i-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14"/><path d="M18 13l-6 6"/><path d="M6 13l6 6"/></svg>`;
           break;
@@ -92,8 +83,12 @@
         case "settings":
           this.innerHTML = `<svg class="i-settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="2"/></svg>`;
           break;
+        default: // question-mark
+          this.innerHTML = `<svg class="i-question" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4" /><path d="M12 19l0 .01" /></svg>`
+          break;
       }
       this._updateSize();
+      this._updateColor();
     }
 
     _updateSize() {
@@ -104,7 +99,10 @@
         $svg.style.height = size;
       }
     }
+    _updateColor() {
+      const $svg = this.firstChild;
+      if ($svg) {
+        $svg.style.color = this.color;
+      }
+    }
   }
-
-  customElements.define("svg-icon", SvgIcon);
-})();

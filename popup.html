@@ -1,36 +1,66 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title data-i18n="extName">Synology Download Manager</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      width: 450px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
-      background: #fbfbfb;
-    }
-  </style>
-  <script src="webcomponents/utils.js" defer></script>
-  <script src="webcomponents/svg-icon.js" defer></script>
-  <script src="webcomponents/popup-header.js" defer></script>
-  <script src="webcomponents/popup-footer.js" defer></script>
-  <script src="webcomponents/state-message.js" defer></script>
-  <script src="webcomponents/error-line.js" defer></script>
-  <script src="webcomponents/task-item.js" defer></script>
-  <script src="webcomponents/task-list.js" defer></script>
-  <script src="popup.js" defer></script>
-</head>
-<body>
-  <popup-header></popup-header>
-  <state-message></state-message>
-  <task-list></task-list>
-  <error-line></error-line>
-  <popup-footer></popup-footer>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Synology Download Manager</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script src="popup.js" type="module"></script>
+  </head>
+  <body>
+    <main x-data="popup_page()">
+      <div class="main-header">
+        <h1 x-text="__('extName')">Synology Download Manager</h1>
+
+        <a href="#" @click.prevent="openDsm()" :title="__('openDsm')">
+          <svg-icon name="external-link" size="20"></svg-icon>
+        </a>
+
+        <a href="#" @click.prevent="openSettings()" :title="__('openSettings')">
+          <svg-icon name="settings" size="20"></svg-icon>
+        </a>
+      </div>
+
+      <div class="task-list">
+        <template x-for="task in tasks" :key="task.id">
+          <div :class="['task-item', 'status--' + task.status, 'locked--' + task.locked]">
+            <header>
+              <div class="info">
+                <div class="title" x-text="task.title">&nbsp;</div>
+                <div class="status">
+                  <svg-icon class="status-icon" :name="task.statusIcon" size="12"></svg-icon>
+                  <div class="subtitle" x-text="task.subtitle">&nbsp;</div>
+                </div>
+              </div>
+
+              <div class="actions" x-show="!task.locked">
+                <a href="" class="resume" @click.prevent="runAction('resume', task.id)" x-show="task.canResume" :title="__('resume')">
+                  <svg-icon name="resume" size="16"></svg-icon>
+                </a>
+                <a href="" class="pause" @click.prevent="runAction('pause', task.id)" x-show="task.canPause" :title="__('pause')">
+                  <svg-icon name="pause" size="16"></svg-icon>
+                </a>
+                <a href="" class="delete" @click.prevent="runAction('delete', task.id)" :title="__('remove')">
+                  <svg-icon name="delete" size="16"></svg-icon>
+                </a>
+              </div>
+            </header>
+            <progress :value="task.percent" max="100" value="0" style="width: 100%" x-text="task.percent + '%'">0%</progress>
+          </div>
+        </template>
+      </div>
+
+      <div class="state-message" x-show="!!stateMessage" x-text="__(stateMessage)"></div>
+
+      <div class="error-message" x-show="!!errorMessage" x-text="errorMessage"></div>
+
+      <div class="main-footer" x-show="stateMessage !== 'missingConfig'">
+        <svg-icon name="down" size="14"></svg-icon>
+        <span x-text="speedDownload"> –.– B/s</span>
+        <span class="spacer"></span>
+        <svg-icon name="up" size="14"></svg-icon>
+        <span x-text="speedUpload"> –.– B/s</span>
+        <span class="last-update-box"> <span x-text="__('lastUpdate')"></span>: <span x-text="updatedAt"> –– </span> </span>
+      </div>
+    </main>
+  </body>
 </html>

@@ -1,30 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
+import Alpine from "./ui/alpine-modified.esm.js";
+import settings_page from "./ui/settings_page.js";
 
-  // DOM
-  const $form = document.querySelector("login-form");
-  const $clearBtn = document.querySelector("clear-settings");
+document.title = chrome.i18n.getMessage("extSettingsTitle");
 
-  // listen 'login form' submit
-  $form.addEventListener("submit", (event) => {
-    $form.disable().status("", chrome.i18n.getMessage("settingsSaving"), 10000);
-    $clearBtn.disable();
+Alpine.data("settings_page", settings_page);
 
-    chrome.runtime.sendMessage({ action: "login", data: event.detail }).then((res) => {
-      $form.enable().status(res.success ? "success" : "error", res.message);
-      $clearBtn.enable();
-    });
-  });
-
-  // listen click on 'clear settings' button
-  $clearBtn.addEventListener("submit", () => {
-    chrome.runtime.sendMessage({ action: "logout" }).then(() => {
-      $form.values = {};
-      $form.status("success", chrome.i18n.getMessage("clearSettingsSuccess"));
-    });
-  });
-
-  // load page data
-  chrome.runtime.sendMessage({ action: "get-settings" }).then((settings) => {
-    $form.values = settings;
-  });
-});
+window.Alpine = Alpine;
+Alpine.start();
