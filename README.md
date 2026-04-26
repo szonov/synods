@@ -1,4 +1,4 @@
-Chrome Extension: Synology Download Manager
+Chrome/Firefox Extension: Synology Download Manager
 ============================================
 
 Technical Specification (MVP)
