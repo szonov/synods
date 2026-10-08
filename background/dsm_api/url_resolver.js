@@ -2,9 +2,96 @@
  * @import {ResolvedUrl} from './types.d.ts';
  */
 
-const MAX_TORRENT_META_FILE_SIZE = 5242880; // 5MB
-const CHECK_TORRENT_META_TIMEOUT = 10000; // 10 sec
-const FETCH_TORRENT_META_TIMEOUT = 10000; // 10 sec
+/**
+ * Resolve a URL either in the background or inside the page that initiated
+ * the context menu. This function is passed directly to
+ * chrome.scripting.executeScript, so it must remain self-contained.
+ *
+ * @param {string} url
+ * @returns {Promise<object>}
+ */
+export async function resolveUrlRequest(url) {
+  const maxFileSize = 5242880; // 5MB
+  const checkTimeout = 10000; // 10 sec
+  const fetchTimeout = 10000; // 10 sec
+
+  const headResponse = await fetch(url, {
+    signal: AbortSignal.timeout(checkTimeout),
+    method: "HEAD",
+    credentials: "include",
+  });
+
+  if (!headResponse.ok) {
+    throw new Error(`Torrent check failed with HTTP ${headResponse.status}`);
+  }
+
+  const contentType = (headResponse.headers.get("content-type") ?? "").toLowerCase();
+  const contentLength = Number.parseInt(headResponse.headers.get("content-length") ?? "0", 10);
+
+  if (
+    !contentType.includes("application/x-bittorrent") ||
+    !Number.isFinite(contentLength) ||
+    contentLength <= 0 ||
+    contentLength > maxFileSize
+  ) {
+    return { type: "direct-download", url };
+  }
+
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(fetchTimeout),
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Torrent download failed with HTTP ${response.status}`);
+  }
+
+  const content = await response.blob();
+  if (content.size <= 0 || content.size > maxFileSize) {
+    throw new Error(`Unexpected torrent file size: ${content.size}`);
+  }
+
+  const bytes = new Uint8Array(await content.arrayBuffer());
+  let binary = "";
+  const chunkSize = 32768;
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+
+  return {
+    type: "metadata-file",
+    url,
+    contentBase64: btoa(binary),
+    contentType: content.type || "application/x-bittorrent",
+    contentDisposition: response.headers.get("content-disposition") ?? "",
+  };
+}
+
+/**
+ * Convert a JSON-safe transported result into a ResolvedUrl.
+ *
+ * @param {object} result
+ * @returns {import('./types.d.ts').ResolvedUrl}
+ */
+export function restoreResolvedUrl(result) {
+  if (result.type !== "metadata-file") {
+    return result;
+  }
+
+  const binary = atob(result.contentBase64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return {
+    type: "metadata-file",
+    url: result.url,
+    content: new Blob([bytes], { type: result.contentType }),
+    filename: extractFilename(result.contentDisposition) || "[torrent].torrent",
+  };
+}
 
 /**
  * Resolve url
@@ -13,58 +100,12 @@ const FETCH_TORRENT_META_TIMEOUT = 10000; // 10 sec
  * @returns {Promise<ResolvedUrl>}
  */
 export async function resolveUrl(url) {
-  const isTorrent = await isTorrentFile(url);
-  if (isTorrent) {
-    try {
-      const { content, filename } = await fetchTorrentFile(url);
-      return { type: "metadata-file", url, content, filename };
-    } catch (e) {}
-  }
-
-  return { type: "direct-download", url };
-}
-
-async function isTorrentFile(url) {
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(CHECK_TORRENT_META_TIMEOUT),
-      method: "HEAD",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const contentType = (response.headers.get("content-type") ?? "").toLowerCase();
-    const rawContentLength = parseInt(response.headers.get("content-length") ?? 0);
-
-    if (!contentType.includes("application/x-bittorrent") || isNaN(rawContentLength)) {
-      return false;
-    }
-
-    return rawContentLength > 0 && rawContentLength <= MAX_TORRENT_META_FILE_SIZE;
-  } catch (e) {
-    return false;
+    const result = await resolveUrlRequest(url);
+    return restoreResolvedUrl(result);
+  } catch (error) {
+    return { type: "direct-download", url };
   }
-}
-
-async function fetchTorrentFile(url) {
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(FETCH_TORRENT_META_TIMEOUT),
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    throw new Error("Bad response");
-  }
-
-  const content = await response.blob();
-  const header = response.headers.get("content-disposition");
-  const filename = extractFilename(header) || "[torrent].torrent";
-
-  return { content, filename };
 }
 
 function extractFilename(contentDispositionHeader) {

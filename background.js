@@ -1,4 +1,30 @@
 import { useService } from "./background/service.js";
+import { resolveUrlRequest, restoreResolvedUrl } from "./background/dsm_api/url_resolver.js";
+
+function isSameOrigin(left, right) {
+  try {
+    return new URL(left).origin === new URL(right).origin;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function resolveUrlInTab(tabId, frameId, url) {
+  const target = Number.isInteger(frameId) ? { tabId, frameIds: [frameId] } : { tabId };
+  const results = await chrome.scripting.executeScript({
+    target,
+    world: "MAIN",
+    func: resolveUrlRequest,
+    args: [url],
+  });
+
+  const result = results[0]?.result;
+  if (!result) {
+    throw new Error("The page did not return a download result");
+  }
+
+  return restoreResolvedUrl(result);
+}
 
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {
@@ -16,7 +42,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Handle context menu click
-chrome.contextMenus.onClicked.addListener((info) => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== "addToSynology") {
     return;
   }
@@ -24,7 +50,12 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (!downloadUrl) {
     return;
   }
-  useService().then((s) => s.createDownloadTask(downloadUrl));
+  let resolver;
+  if (Number.isInteger(tab?.id) && isSameOrigin(downloadUrl, info.pageUrl ?? tab.url ?? "")) {
+    resolver = (url) => resolveUrlInTab(tab.id, info.frameId, url);
+  }
+
+  useService().then((s) => s.createDownloadTask(downloadUrl, resolver));
 });
 
 // handle messages from popup or settings pages

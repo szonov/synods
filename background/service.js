@@ -150,12 +150,12 @@ class BackgroundService {
     await this._refreshTasks();
   }
 
-  async createDownloadTask(url) {
+  async createDownloadTask(url, resolver) {
     if (this.api.isMissingConfig) {
       return await chrome.runtime.openOptionsPage();
     }
 
-    const response = await this.api.createTask(url);
+    const response = await this.api.createTask(url, null, resolver);
 
     if (response.success) {
       await chrome.notifications.create({

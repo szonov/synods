@@ -169,10 +169,16 @@ export class Api {
   /**
    * @param {string} downloadUrl
    * @param {AbortSignal?} signal
+   * @param {function(string): Promise<import('./types.d.ts').ResolvedUrl>} resolver
    * @returns {ApiResponsePromise}
    */
-  async createTask(downloadUrl, signal = null) {
-    const dl = await resolveUrl(downloadUrl);
+  async createTask(downloadUrl, signal = null, resolver = resolveUrl) {
+    let dl;
+    try {
+      dl = await resolver(downloadUrl);
+    } catch (error) {
+      dl = await resolveUrl(downloadUrl);
+    }
 
     switch (dl.type) {
       case "direct-download":
