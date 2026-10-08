@@ -17,8 +17,11 @@ export default () => ({
   messageText: "",
   messageType: "",
   messageTimer: 0,
+  _storageListener: null,
 
   init: async function () {
+    this._storageListener = this._handleStorageChange.bind(this);
+    chrome.storage.onChanged.addListener(this._storageListener);
     const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
     this.accounts = settings.accounts ?? [];
     this.activeAccountId = settings.activeAccountId ?? "";
@@ -28,6 +31,14 @@ export default () => ({
 
   destroy: function () {
     clearTimeout(this.messageTimer);
+    chrome.storage.onChanged.removeListener(this._storageListener);
+    this._storageListener = null;
+  },
+
+  _handleStorageChange: function (changes, areaName) {
+    if (areaName === "local" && changes.activeAccountId) {
+      this.activeAccountId = changes.activeAccountId.newValue || "";
+    }
   },
 
   selectAccount: function (id) {

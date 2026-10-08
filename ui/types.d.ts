@@ -66,6 +66,7 @@ export declare interface SettingsPageComponent {
   handleDelete: () => void;
   selectAccount: (id: string) => void;
   addAccount: () => void;
+  _handleStorageChange: (changes: object, areaName: string) => void;
   __: (string) => string;
   _message: (type: "error" | "success" | "", text: string, timeout: number = 4000) => void;
 
