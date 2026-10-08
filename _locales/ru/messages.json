@@ -24,6 +24,7 @@
     "message": "Загрузить в $ACCOUNT$",
     "placeholders": { "account": { "content": "$1" } }
   },
+  "defaultDestination": { "message": "По умолчанию" },
   "taskAdded": {
     "message": "Загрузка добавлена"
   },
@@ -58,6 +59,9 @@
   "accountNameUnique": { "message": "Аккаунт с таким названием уже существует" },
   "deleteAccount": { "message": "Удалить аккаунт" },
   "deleteAccountConfirm": { "message": "Удалить этот аккаунт из расширения?" },
+  "destinationsLabel": { "message": "Избранные папки" },
+  "destinationsPlaceholder": { "message": "downloads\nvideo/series" },
+  "destinationsHint": { "message": "По одной папке в строке. Пустой список использует папку Download Station по умолчанию." },
   "invalidHost": {
     "message": "Ошибка: Неверно указан Хост, должен начинаться с http:// или https://"
   },

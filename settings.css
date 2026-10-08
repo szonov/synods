@@ -56,13 +56,15 @@ h2 {
         font-weight: 500;
     }
 
-    input {
+    input, textarea {
         width: 100%;
         padding: 8px;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 14px;
     }
+    textarea { min-height: 82px; resize: vertical; }
+    small { display: block; margin-top: 4px; color: #777; }
 }
 
 .action-group {

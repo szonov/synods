@@ -34,6 +34,7 @@ declare interface SynologyAccount {
   host: string;
   account: string;
   passwd: string;
+  destinations: string[];
 }
 
 export declare interface PopupPageComponent {
@@ -77,6 +78,7 @@ export declare interface SettingsPageComponent {
   host: string;
   account: string;
   passwd: string;
+  destinationsText: string;
 
   messageText: string;
   messageType: string;

@@ -50,6 +50,11 @@
       <label for="passwd" x-text="__('passwordLabel')">Password</label>
       <input type="password" id="passwd" x-model="passwd" :disabled="loading"/>
     </div>
+    <div class="form-group">
+      <label for="destinations" x-text="__('destinationsLabel')"></label>
+      <textarea id="destinations" x-model="destinationsText" :disabled="loading" :placeholder="__('destinationsPlaceholder')"></textarea>
+      <small x-text="__('destinationsHint')"></small>
+    </div>
     <div class="action-group">
       <button type="submit" x-text="__('saveBtn')">Save</button>
       <span x-text="messageText" :class="'status--' + messageType"></span>

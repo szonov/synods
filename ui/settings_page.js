@@ -12,6 +12,7 @@ export default () => ({
   host: "",
   account: "",
   passwd: "",
+  destinationsText: "",
 
   messageText: "",
   messageType: "",
@@ -36,6 +37,7 @@ export default () => ({
     this.host = account?.host || "";
     this.account = account?.account || "";
     this.passwd = account?.passwd || "";
+    this.destinationsText = (account?.destinations || []).join("\n");
   },
 
   addAccount: function () {
@@ -49,6 +51,7 @@ export default () => ({
       host: this.host.trim(),
       account: this.account.trim(),
       passwd: this.passwd,
+      destinations: [...new Set(this.destinationsText.split("\n").map((item) => item.trim()).filter(Boolean))],
     };
 
     if (!this._validate(data)) {

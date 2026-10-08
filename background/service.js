@@ -100,6 +100,7 @@ class BackgroundService {
       account: data.account.trim(),
       passwd: data.passwd,
       sid: "",
+      destinations: Array.isArray(data.destinations) ? data.destinations : [],
     };
     const duplicate = this.accounts.some((item) => item.id !== account.id && item.name === account.name);
     if (duplicate) return { success: false, message: chrome.i18n.getMessage("accountNameUnique") };
@@ -149,12 +150,12 @@ class BackgroundService {
     await this._refreshTasks();
   }
 
-  async createDownloadTask(url, resolver) {
+  async createDownloadTask(url, resolver, destination = "") {
     if (this.api.isMissingConfig) {
       return await chrome.runtime.openOptionsPage();
     }
 
-    const response = await this.api.createTask(url, null, resolver);
+    const response = await this.api.createTask(url, destination, null, resolver);
 
     if (response.success) {
       await chrome.notifications.create({

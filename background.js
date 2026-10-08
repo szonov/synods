@@ -26,36 +26,53 @@ async function resolveUrlInTab(tabId, frameId, url) {
   return restoreResolvedUrl(result);
 }
 
-async function updateContextMenu() {
+const MENU_CONTEXTS = ["link", "audio", "video", "image"];
+
+async function rebuildContextMenu() {
   const settings = await useService().then((service) => service.getSettings());
   const active = settings.accounts.find((account) => account.id === settings.activeAccountId);
-  await chrome.contextMenus.update("addToSynology", {
-    title: active
-      ? chrome.i18n.getMessage("contextMenuAddAccount", active.name)
-      : chrome.i18n.getMessage("contextMenuAdd"),
+  await chrome.contextMenus.removeAll();
+  const title = active
+    ? chrome.i18n.getMessage("contextMenuAddAccount", active.name)
+    : chrome.i18n.getMessage("contextMenuAdd");
+  const destinations = active?.destinations || [];
+
+  if (destinations.length === 0) {
+    chrome.contextMenus.create({ id: "download-default", title, contexts: MENU_CONTEXTS });
+    return;
+  }
+
+  chrome.contextMenus.create({ id: "download-root", title, contexts: MENU_CONTEXTS });
+  chrome.contextMenus.create({
+    id: "download-default",
+    parentId: "download-root",
+    title: chrome.i18n.getMessage("defaultDestination"),
+    contexts: MENU_CONTEXTS,
   });
+  destinations.forEach((destination, index) => chrome.contextMenus.create({
+    id: `download-destination:${index}`,
+    parentId: "download-root",
+    title: destination,
+    contexts: MENU_CONTEXTS,
+  }));
 }
 
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {
-  updateContextMenu();
+  rebuildContextMenu();
   useService().then((s) => s.initializeBadge());
 });
 
 // Events are triggered when an extension is installed for the first time or updated.
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "addToSynology",
-    title: chrome.i18n.getMessage("contextMenuAdd"),
-    contexts: ["link", "audio", "video", "image"],
-  });
-  updateContextMenu();
+  rebuildContextMenu();
   useService().then((s) => s.initializeBadge());
 });
 
 // Handle context menu click
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId !== "addToSynology") {
+  const menuItemId = String(info.menuItemId);
+  if (menuItemId !== "download-default" && !menuItemId.startsWith("download-destination:")) {
     return;
   }
   const downloadUrl = info.linkUrl ?? info.srcUrl ?? "";
@@ -67,7 +84,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     resolver = (url) => resolveUrlInTab(tab.id, info.frameId, url);
   }
 
-  useService().then((s) => s.createDownloadTask(downloadUrl, resolver));
+  useService().then((service) => {
+    const settings = service.getSettings();
+    const active = settings.accounts.find((account) => account.id === settings.activeAccountId);
+    const index = Number.parseInt(menuItemId.split(":")[1], 10);
+    const destination = Number.isInteger(index) ? active?.destinations?.[index] || "" : "";
+    return service.createDownloadTask(downloadUrl, resolver, destination);
+  });
 });
 
 // handle messages from popup or settings pages
@@ -109,7 +132,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       useService()
         .then((s) => s.saveAccount(data))
         .then(async (response) => {
-          if (response.success) await updateContextMenu();
+          if (response.success) await rebuildContextMenu();
           return response;
         })
         .then(sendResponse);
@@ -119,7 +142,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       useService()
         .then((s) => s.deleteAccount(data.id))
         .then(async (response) => {
-          await updateContextMenu();
+          await rebuildContextMenu();
           return response;
         })
         .then(sendResponse);
@@ -129,7 +152,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       useService()
         .then((s) => s.setActiveAccount(data.id))
         .then(async (response) => {
-          if (response.success) await updateContextMenu();
+          if (response.success) await rebuildContextMenu();
           return response;
         })
         .then(sendResponse);

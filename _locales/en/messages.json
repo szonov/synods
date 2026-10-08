@@ -24,6 +24,7 @@
     "message": "Download to $ACCOUNT$",
     "placeholders": { "account": { "content": "$1" } }
   },
+  "defaultDestination": { "message": "Default" },
   "taskAdded": {
     "message": "Download task added"
   },
@@ -58,6 +59,9 @@
   "accountNameUnique": { "message": "An account with this name already exists" },
   "deleteAccount": { "message": "Delete account" },
   "deleteAccountConfirm": { "message": "Delete this account from the extension?" },
+  "destinationsLabel": { "message": "Favorite folders" },
+  "destinationsPlaceholder": { "message": "downloads\nvideo/series" },
+  "destinationsHint": { "message": "One folder per line. An empty list uses the Download Station default folder." },
   "invalidHost": {
     "message": "Error: The Host is incorrectly specified, it must start with http:// or https://"
   },

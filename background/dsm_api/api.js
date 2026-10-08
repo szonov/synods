@@ -168,11 +168,12 @@ export class Api {
 
   /**
    * @param {string} downloadUrl
+   * @param {string} destination
    * @param {AbortSignal?} signal
    * @param {function(string): Promise<import('./types.d.ts').ResolvedUrl>} resolver
    * @returns {ApiResponsePromise}
    */
-  async createTask(downloadUrl, signal = null, resolver = resolveUrl) {
+  async createTask(downloadUrl, destination = "", signal = null, resolver = resolveUrl) {
     let dl;
     try {
       dl = await resolver(downloadUrl);
@@ -182,10 +183,10 @@ export class Api {
 
     switch (dl.type) {
       case "direct-download":
-        return this.createUriTask(dl.url, signal);
+        return this.createUriTask(dl.url, destination, signal);
 
       case "metadata-file":
-        return this.createFileTask(dl.content, dl.filename, signal);
+        return this.createFileTask(dl.content, dl.filename, destination, signal);
 
       default:
         return this._error("unknown", `Unexpected resolved url type '${dl.type}' for '${dl.url}'`);
@@ -194,20 +195,24 @@ export class Api {
 
   /**
    * @param {string} uri
+   * @param {string} destination
    * @param {AbortSignal?} signal
    * @returns {ApiResponsePromise}
    */
-  async createUriTask(uri, signal = null) {
-    return this._taskApi("create", {uri: new URL(uri.replace(/,/g, "%2C"))}, signal);
+  async createUriTask(uri, destination = "", signal = null) {
+    const data = { uri: new URL(uri.replace(/,/g, "%2C")) };
+    if (destination) data.destination = destination;
+    return this._taskApi("create", data, signal);
   }
 
   /**
    * @param {Blob} content
    * @param {string} filename
+   * @param {string} destination
    * @param {AbortSignal?} signal
    * @returns {ApiResponsePromise}
    */
-  async createFileTask(content, filename, signal = null) {
+  async createFileTask(content, filename, destination = "", signal = null) {
     const body = new FormData();
 
     body.append("api", "SYNO.DownloadStation2.Task");
@@ -215,7 +220,7 @@ export class Api {
     body.append("version", "2");
     body.append("type", `"file"`);
     body.append("file", `["torrent"]`);
-    body.append("destination", `""`);
+    body.append("destination", JSON.stringify(destination));
     body.append("create_list", "false");
     body.append("torrent", content, filename);
 
