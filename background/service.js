@@ -40,6 +40,8 @@ class BackgroundService {
    */
   constructor(api) {
     this.api = api;
+    this.accounts = [];
+    this.activeAccountId = "";
 
     // Map of locked task ids, where key is Task ID, value is boolean (always true)
     this._locked = {};
@@ -51,13 +53,13 @@ class BackgroundService {
     this._updatedAt = 0;
 
     this._tasksFetchPromise = null;
+    this._accountGeneration = 0;
   }
 
   getSettings () {
     return {
-      host: this.api.host,
-      account: this.api.account,
-      passwd: this.api.passwd,
+      accounts: this.accounts.map(({ sid, ...account }) => account),
+      activeAccountId: this.activeAccountId,
     }
   }
 
@@ -90,59 +92,56 @@ class BackgroundService {
     await this._taskAction(id, this.api.deleteTask.bind(this.api));
   }
 
-  async login(data) {
-
-    this._locked = {};
-    this._tasks = [];
-    this._updatedAt = 0;
-
-    await this._sendMissingConfig()
-
-    const newSettings = {
-      host: data.host.trim() || "",
+  async saveAccount(data) {
+    const account = {
+      id: data.id || crypto.randomUUID(),
+      name: data.name.trim(),
+      host: data.host.trim(),
       account: data.account.trim(),
       passwd: data.passwd,
-    }
-    const oldSettings = this.updateSettings({sid:"", ...newSettings});
-
-    const response = await this.api.login();
-
-    if (response.success) {
-      await chrome.storage.local.set(newSettings);
-      await this._refreshTasks();
-      return {
-        success: true,
-        message: chrome.i18n.getMessage("loginSuccess"),
-      };
-    } else {
-      this.updateSettings(oldSettings);
-    }
-
-    if (response.type !== "missing-config") {
-      await setBadge(-1);
-    }
-
-    // TODO: i18n
-    return { success: false, message: `${response.type}: ${response.message}` };
-  }
-
-  async logout() {
-    this._locked = {};
-    this._tasks = [];
-    this._updatedAt = 0;
-
-    await this._sendMissingConfig()
-
-    const newSettings = {
-      host: "",
-      account: "",
-      passwd: "",
       sid: "",
     };
+    const duplicate = this.accounts.some((item) => item.id !== account.id && item.name === account.name);
+    if (duplicate) return { success: false, message: chrome.i18n.getMessage("accountNameUnique") };
 
-    this.updateSettings(newSettings);
-    await chrome.storage.local.set(newSettings);
+    const testApi = new Api(account);
+    const response = await testApi.login();
+    if (!response.success) return { success: false, message: `${response.type}: ${response.message}` };
+    account.sid = testApi.sid;
 
+    const index = this.accounts.findIndex((item) => item.id === account.id);
+    if (index >= 0) this.accounts[index] = account;
+    else this.accounts.push(account);
+    if (!this.activeAccountId) this.activeAccountId = account.id;
+    await this._persistAccounts();
+    if (this.activeAccountId === account.id) {
+      this._activateAccount(account);
+      await this._refreshTasks();
+    }
+    return { success: true, id: account.id, message: chrome.i18n.getMessage("loginSuccess") };
+  }
+
+  async deleteAccount(id) {
+    const wasActive = id === this.activeAccountId;
+    const index = this.accounts.findIndex((account) => account.id === id);
+    this.accounts = this.accounts.filter((account) => account.id !== id);
+    if (wasActive) this.activeAccountId = this.accounts[Math.min(index, this.accounts.length - 1)]?.id || "";
+    await this._persistAccounts();
+    if (wasActive) {
+      this._activateAccount(this._activeAccount());
+      if (this.activeAccountId) await this._refreshTasks();
+      else await this._sendMissingConfig();
+    }
+    return { success: true };
+  }
+
+  async setActiveAccount(id) {
+    const account = this.accounts.find((item) => item.id === id);
+    if (!account || id === this.activeAccountId) return { success: !!account };
+    this.activeAccountId = id;
+    await this._persistAccounts();
+    this._activateAccount(account);
+    await this._refreshTasks();
     return { success: true };
   }
 
@@ -179,6 +178,38 @@ class BackgroundService {
     return this.api.setSettings(settings);
   }
 
+  loadSettings(settings) {
+    this.accounts = Array.isArray(settings.accounts) ? settings.accounts : [];
+    this.activeAccountId = this.accounts.some((item) => item.id === settings.activeAccountId)
+      ? settings.activeAccountId
+      : this.accounts[0]?.id || "";
+    this._activateAccount(this._activeAccount());
+  }
+
+  _activeAccount() {
+    return this.accounts.find((item) => item.id === this.activeAccountId);
+  }
+
+  _activateAccount(account) {
+    this._accountGeneration++;
+    this._locked = {};
+    this._tasks = [];
+    this._updatedAt = 0;
+    this._tasksFetchPromise = null;
+    this.api.setSettings(account || { host: "", account: "", passwd: "", sid: "" });
+  }
+
+  async _persistAccounts() {
+    await chrome.storage.local.set({ accounts: this.accounts, activeAccountId: this.activeAccountId });
+  }
+
+  async saveActiveSid(sid) {
+    const account = this._activeAccount();
+    if (!account) return;
+    account.sid = sid;
+    await this._persistAccounts();
+  }
+
   /**
    *
    * @param {string} id
@@ -206,10 +237,11 @@ class BackgroundService {
     await this._refreshTasks();
   }
 
-  async _fetchTasks() {
+  async _fetchTasks(generation) {
     const response = await this.api.getTasks("transfer");
+    if (generation !== this._accountGeneration) return false;
 
-    const ok = this._checkApiResponse(response);
+    const ok = await this._checkApiResponse(response);
 
     if (response.success) {
       this._tasks = response.data.tasks;
@@ -221,17 +253,18 @@ class BackgroundService {
 
   async _refreshTasks() {
     if (this._tasksFetchPromise === null) {
-      // Create a new promise
-      this._tasksFetchPromise = (async () => {
-        // console.log(`[Dedup] Executing new _dedupeFetchTasks`);
-        const ok = await this._fetchTasks();
-        // console.log(`[Dedup] _dedupeFetchTasks completed, removed from queue`);
+      const generation = this._accountGeneration;
+      const promise = (async () => {
+        const ok = await this._fetchTasks(generation);
         if (ok) await this._sendTasks();
-        this._tasksFetchPromise = null;
         return ok;
       })();
-    } else {
-      // console.log(`[Dedup] refreshTasks already in flight, waiting...`);
+      this._tasksFetchPromise = promise;
+      try {
+        return await promise;
+      } finally {
+        if (this._tasksFetchPromise === promise) this._tasksFetchPromise = null;
+      }
     }
 
     return this._tasksFetchPromise;
@@ -283,20 +316,22 @@ class BackgroundService {
   }
 }
 
-let service = null;
+let servicePromise = null;
 
 /**
  * @returns {Promise<BackgroundService>}
  */
 export async function useService() {
-  if (!service) {
-    const api = new Api();
-    api.onSidChange((sid) => chrome.storage.local.set({ sid }));
+  if (!servicePromise) {
+    servicePromise = (async () => {
+      const api = new Api();
+      const service = new BackgroundService(api);
+      api.onSidChange((sid) => service.saveActiveSid(sid));
 
-    service = new BackgroundService(api);
-
-    const settings = await chrome.storage.local.get();
-    service.updateSettings(settings || {});
+      const settings = await chrome.storage.local.get();
+      service.loadSettings(settings || {});
+      return service;
+    })();
   }
-  return service;
+  return servicePromise;
 }

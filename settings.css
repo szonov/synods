@@ -11,16 +11,28 @@ body {
 }
 
 main {
-    max-width: 500px;
+    max-width: 820px;
     margin: 0 auto;
 }
 
-form {
+.settings-card {
     margin-top: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+
+.settings-body { display: grid; grid-template-columns: 260px 1fr; }
+.account-list { padding: 8px 16px 16px; border-right: 1px solid #ddd; }
+.account-list h2, form h2 { padding-left: 0; }
+.account-list > button:not(.add-account) { position: relative; width: 100%; padding: 10px; border: 1px solid #ddd; background: white; text-align: left; cursor: pointer; }
+.account-list > button.selected { background: #e8f1fd; border-color: #b8d4fa; }
+.account-list strong, .account-list small { display: block; }
+.account-list small { margin-top: 3px; color: #666; overflow: hidden; text-overflow: ellipsis; }
+.account-list span { position: absolute; top: 8px; right: 8px; color: #0d8050; font-size: 10px; font-weight: 600; }
+.add-account { width: 100%; margin-top: 12px; padding: 8px; color: #1a73e8; background: white; border: 1px solid #1a73e8; border-radius: 4px; cursor: pointer; }
+.empty-accounts { color: #666; padding: 12px 0; }
+form { padding: 8px 0; }
 
 h1 {
     font-size: 20px;
@@ -68,19 +80,11 @@ h2 {
         font-size: 14px;
         margin-right: 12px;
     }
-}
-
-.bottom-group {
-    margin: 18px auto;
-    text-align: center;
-    a {
-        text-decoration: underline;
-        color: #C43B38;
-    }
+    .delete-account { margin-left: auto; color: #C43B38; }
 }
 
 .settings--loading {
-    form {
+    .settings-card {
         background-color: #f5f5f5!important;
     }
     button {

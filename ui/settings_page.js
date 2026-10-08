@@ -5,7 +5,10 @@
 /** @returns {SettingsPageComponent} */
 export default () => ({
   loading: true,
-
+  accounts: [],
+  selectedId: "",
+  activeAccountId: "",
+  name: "",
   host: "",
   account: "",
   passwd: "",
@@ -16,9 +19,9 @@ export default () => ({
 
   init: async function () {
     const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
-    this.host = settings.host ?? "";
-    this.account = settings.account ?? "";
-    this.passwd = settings.passwd ?? "";
+    this.accounts = settings.accounts ?? [];
+    this.activeAccountId = settings.activeAccountId ?? "";
+    this.selectAccount(this.accounts[0]?.id || "");
     this.loading = false;
   },
 
@@ -26,8 +29,23 @@ export default () => ({
     clearTimeout(this.messageTimer);
   },
 
-  handleLogin: async function () {
+  selectAccount: function (id) {
+    const account = this.accounts.find((item) => item.id === id);
+    this.selectedId = account?.id || "";
+    this.name = account?.name || "";
+    this.host = account?.host || "";
+    this.account = account?.account || "";
+    this.passwd = account?.passwd || "";
+  },
+
+  addAccount: function () {
+    this.selectAccount("");
+  },
+
+  handleSave: async function () {
     const data = {
+      id: this.selectedId,
+      name: this.name.trim(),
       host: this.host.trim(),
       account: this.account.trim(),
       passwd: this.passwd,
@@ -39,27 +57,33 @@ export default () => ({
 
     this.loading = true;
     this._message("", chrome.i18n.getMessage("settingsSaving"), 10000);
-    const res = await chrome.runtime.sendMessage({ action: "login", data });
+    const res = await chrome.runtime.sendMessage({ action: "save-account", data });
     this._message(res.success ? "success" : "error", res.message);
+    if (res.success) {
+      const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
+      this.accounts = settings.accounts;
+      this.activeAccountId = settings.activeAccountId;
+      this.selectAccount(res.id);
+    }
     this.loading = false;
   },
 
-  handleLogout: async function () {
+  handleDelete: async function () {
     if (this.loading) {
       return;
     }
 
-    if (!confirm(chrome.i18n.getMessage("clearSettingsConfirm"))) {
+    if (!confirm(chrome.i18n.getMessage("deleteAccountConfirm"))) {
       return;
     }
 
     this.loading = true;
 
-    await chrome.runtime.sendMessage({ action: "logout" });
-    this.host = "";
-    this.account = "";
-    this.passwd = "";
-    this._message("success", chrome.i18n.getMessage("clearSettingsSuccess"));
+    await chrome.runtime.sendMessage({ action: "delete-account", data: { id: this.selectedId } });
+    const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
+    this.accounts = settings.accounts;
+    this.activeAccountId = settings.activeAccountId;
+    this.selectAccount(this.accounts[0]?.id || "");
 
     this.loading = false;
   },
@@ -81,8 +105,8 @@ export default () => ({
     }
   },
 
-  _validate: function ({ host, account, passwd }) {
-    if (host === "" || account === "" || passwd === "") {
+  _validate: function ({ name, host, account, passwd }) {
+    if (name === "" || host === "" || account === "" || passwd === "") {
       this._message("error", chrome.i18n.getMessage("requiredAll"));
       return false;
     }

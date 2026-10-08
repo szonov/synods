@@ -20,6 +20,10 @@
   "contextMenuAdd": {
     "message": "Add to Synology Download Station"
   },
+  "contextMenuAddAccount": {
+    "message": "Download to $ACCOUNT$",
+    "placeholders": { "account": { "content": "$1" } }
+  },
   "taskAdded": {
     "message": "Download task added"
   },
@@ -44,6 +48,16 @@
   "saveBtn": {
     "message": "Save"
   },
+  "accountsTitle": { "message": "Accounts" },
+  "activeAccount": { "message": "Active" },
+  "noAccounts": { "message": "No accounts yet. Add a Synology to get started." },
+  "addAccount": { "message": "+ Add account" },
+  "addAccountTitle": { "message": "Add account" },
+  "editAccount": { "message": "Account settings" },
+  "accountNameLabel": { "message": "Account name" },
+  "accountNameUnique": { "message": "An account with this name already exists" },
+  "deleteAccount": { "message": "Delete account" },
+  "deleteAccountConfirm": { "message": "Delete this account from the extension?" },
   "invalidHost": {
     "message": "Error: The Host is incorrectly specified, it must start with http:// or https://"
   },

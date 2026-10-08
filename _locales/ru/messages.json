@@ -20,6 +20,10 @@
   "contextMenuAdd": {
     "message": "Добавить в Synology Download Station"
   },
+  "contextMenuAddAccount": {
+    "message": "Загрузить в $ACCOUNT$",
+    "placeholders": { "account": { "content": "$1" } }
+  },
   "taskAdded": {
     "message": "Загрузка добавлена"
   },
@@ -44,6 +48,16 @@
   "saveBtn": {
     "message": "Сохранить"
   },
+  "accountsTitle": { "message": "Аккаунты" },
+  "activeAccount": { "message": "Активный" },
+  "noAccounts": { "message": "Аккаунтов пока нет. Добавьте Synology, чтобы начать работу." },
+  "addAccount": { "message": "+ Добавить аккаунт" },
+  "addAccountTitle": { "message": "Добавление аккаунта" },
+  "editAccount": { "message": "Настройки аккаунта" },
+  "accountNameLabel": { "message": "Название аккаунта" },
+  "accountNameUnique": { "message": "Аккаунт с таким названием уже существует" },
+  "deleteAccount": { "message": "Удалить аккаунт" },
+  "deleteAccountConfirm": { "message": "Удалить этот аккаунт из расширения?" },
   "invalidHost": {
     "message": "Ошибка: Неверно указан Хост, должен начинаться с http:// или https://"
   },

@@ -28,6 +28,14 @@ declare interface AppTaskItem {
   percent: number;
 }
 
+declare interface SynologyAccount {
+  id: string;
+  name: string;
+  host: string;
+  account: string;
+  passwd: string;
+}
+
 export declare interface PopupPageComponent {
   $root: HTMLElement;
   $el: HTMLElement;
@@ -37,9 +45,12 @@ export declare interface PopupPageComponent {
   openDsm: () => void;
   openSettings: () => void;
   runAction: (action: string, id: string) => void;
+  switchAccount: () => void;
   __: (string) => string;
 
   tasks: AppTaskItem[];
+  accounts: SynologyAccount[];
+  activeAccountId: string;
   speedDownload: string;
   speedUpload: string;
   updatedAt: string;
@@ -50,12 +61,18 @@ export declare interface PopupPageComponent {
 export declare interface SettingsPageComponent {
   init: () => void;
   destroy: () => void;
-  handleLogin: () => void;
-  handleLogout: () => void;
+  handleSave: () => void;
+  handleDelete: () => void;
+  selectAccount: (id: string) => void;
+  addAccount: () => void;
   __: (string) => string;
   _message: (type: "error" | "success" | "", text: string, timeout: number = 4000) => void;
 
   loading: boolean;
+  accounts: SynologyAccount[];
+  selectedId: string;
+  activeAccountId: string;
+  name: string;
 
   host: string;
   account: string;

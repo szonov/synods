@@ -10,10 +10,33 @@
 <body>
 <main x-data="settings_page()" :class="{ 'settings--loading': loading }">
 
-  <form @submit.prevent="handleLogin()">
+  <div class="settings-card">
 
     <h1 x-text="__('extName')">Synology Download Manager</h1>
-    <h2 x-text="__('openSettings')">Settings</h2>
+    <div class="settings-body">
+      <aside class="account-list">
+        <h2 x-text="__('accountsTitle')">Accounts</h2>
+        <div style="height: 8px;" x-show="accounts.length > 0" ></div>
+        <div class="empty-accounts" x-show="accounts.length === 0" x-text="__('noAccounts')"></div>
+        <template x-for="item in accounts" :key="item.id">
+          <button type="button" style="margin-top: 4px; border-radius: 5px;" :class="{ selected: selectedId === item.id }" @click="selectAccount(item.id)">
+            <strong x-text="item.name"></strong>
+            <small x-text="item.host.replace(/^https?:\/\//, '')"></small>
+            <span x-show="item.id === activeAccountId" x-text="__('activeAccount')"></span>
+          </button>
+        </template>
+        <button type="button" class="add-account" @click="addAccount()" x-text="__('addAccount')"></button>
+      </aside>
+
+      <form @submit.prevent="handleSave()">
+        <div style="padding: 0 16px">
+          <h2 x-text="selectedId ? __('editAccount') : __('addAccountTitle')"></h2>
+        </div>
+
+    <div class="form-group">
+      <label for="name" x-text="__('accountNameLabel')"></label>
+      <input id="name" x-model="name" :disabled="loading"/>
+    </div>
 
     <div class="form-group">
       <label for="host" x-text="__('hostLabel')">Synology Host</label>
@@ -30,11 +53,10 @@
     <div class="action-group">
       <button type="submit" x-text="__('saveBtn')">Save</button>
       <span x-text="messageText" :class="'status--' + messageType"></span>
+      <a href="" class="delete-account" x-show="selectedId" @click.prevent="handleDelete()" x-text="__('deleteAccount')"></a>
     </div>
-  </form>
-
-  <div class="bottom-group">
-    <a href="" @click.prevent="handleLogout()" x-text="__('clearSettings')"> Clear Settings </a>
+      </form>
+    </div>
   </div>
 </main>
 </body>

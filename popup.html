@@ -20,6 +20,14 @@
         </a>
       </div>
 
+      <div class="account-selector" x-show="accounts.length > 1">
+        <select x-model="activeAccountId" @change="switchAccount()">
+          <template x-for="item in accounts" :key="item.id">
+            <option :value="item.id" x-text="item.name"></option>
+          </template>
+        </select>
+      </div>
+
       <div class="task-list">
         <template x-for="task in tasks" :key="task.id">
           <div :class="['task-item', 'status--' + task.status, 'locked--' + task.locked]">

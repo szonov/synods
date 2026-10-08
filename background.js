@@ -26,8 +26,19 @@ async function resolveUrlInTab(tabId, frameId, url) {
   return restoreResolvedUrl(result);
 }
 
+async function updateContextMenu() {
+  const settings = await useService().then((service) => service.getSettings());
+  const active = settings.accounts.find((account) => account.id === settings.activeAccountId);
+  await chrome.contextMenus.update("addToSynology", {
+    title: active
+      ? chrome.i18n.getMessage("contextMenuAddAccount", active.name)
+      : chrome.i18n.getMessage("contextMenuAdd"),
+  });
+}
+
 // Events are triggered when the browser is launched.
 chrome.runtime.onStartup.addListener(() => {
+  updateContextMenu();
   useService().then((s) => s.initializeBadge());
 });
 
@@ -38,6 +49,7 @@ chrome.runtime.onInstalled.addListener(() => {
     title: chrome.i18n.getMessage("contextMenuAdd"),
     contexts: ["link", "audio", "video", "image"],
   });
+  updateContextMenu();
   useService().then((s) => s.initializeBadge());
 });
 
@@ -93,15 +105,33 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       useService().then((s) => s.deleteTask(data.id));
       return;
 
-    case "login":
+    case "save-account":
       useService()
-        .then((s) => s.login(data))
+        .then((s) => s.saveAccount(data))
+        .then(async (response) => {
+          if (response.success) await updateContextMenu();
+          return response;
+        })
         .then(sendResponse);
       return true;
 
-    case "logout":
+    case "delete-account":
       useService()
-        .then((s) => s.logout())
+        .then((s) => s.deleteAccount(data.id))
+        .then(async (response) => {
+          await updateContextMenu();
+          return response;
+        })
+        .then(sendResponse);
+      return true;
+
+    case "set-active-account":
+      useService()
+        .then((s) => s.setActiveAccount(data.id))
+        .then(async (response) => {
+          if (response.success) await updateContextMenu();
+          return response;
+        })
         .then(sendResponse);
       return true;
   }

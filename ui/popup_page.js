@@ -11,6 +11,8 @@ const REFRESH_INTERVAL = 5000;
  */
 export default () => ({
   tasks: [],
+  accounts: [],
+  activeAccountId: "",
 
   speedDownload: "--",
   speedUpload: "--",
@@ -25,6 +27,9 @@ export default () => ({
   init: async function () {
     this._listener = this._handleMessage.bind(this);
     chrome.runtime.onMessage.addListener(this._listener);
+    const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
+    this.accounts = settings.accounts ?? [];
+    this.activeAccountId = settings.activeAccountId ?? "";
     chrome.runtime.sendMessage({ action: "latest-tasks" }).then(() => {});
   },
 
@@ -48,6 +53,12 @@ export default () => ({
 
   openSettings: async function () {
     await chrome.runtime.openOptionsPage();
+  },
+
+  switchAccount: async function () {
+    this.stateMessage = "loading";
+    this.tasks = [];
+    await chrome.runtime.sendMessage({ action: "set-active-account", data: { id: this.activeAccountId } });
   },
 
   runAction: async function (action, id) {
