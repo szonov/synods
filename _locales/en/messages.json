@@ -68,6 +68,9 @@
   "requiredAll": {
     "message": "Error: All fields are required."
   },
+  "nasPermissionRequired": {
+    "message": "Allow access to this NAS by opening Settings and saving its account."
+  },
   "loginSuccess": {
     "message": "Connection established."
   },

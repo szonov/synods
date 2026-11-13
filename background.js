@@ -80,7 +80,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     return;
   }
   let resolver;
-  if (Number.isInteger(tab?.id) && isSameOrigin(downloadUrl, info.pageUrl ?? tab.url ?? "")) {
+  if (Number.isInteger(tab?.id) && isSameOrigin(downloadUrl, info.frameUrl ?? info.pageUrl ?? tab.url ?? "")) {
     resolver = (url) => resolveUrlInTab(tab.id, info.frameId, url);
   }
 

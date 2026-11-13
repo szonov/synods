@@ -1,3 +1,5 @@
+import { dsmHostPermission } from "../background/dsm_api/host_permission.js";
+
 /**
  * @import { SettingsPageComponent } from "./types.d.ts";
  */
@@ -59,7 +61,7 @@ export default () => ({
     const data = {
       id: this.selectedId,
       name: this.name.trim(),
-      host: this.host.trim(),
+      host: this.host.trim().replace(/\/+$/, ""),
       account: this.account.trim(),
       passwd: this.passwd,
       destinations: [...new Set(this.destinationsText.split("\n").map((item) => item.trim()).filter(Boolean))],
@@ -69,17 +71,34 @@ export default () => ({
       return false;
     }
 
-    this.loading = true;
-    this._message("", chrome.i18n.getMessage("settingsSaving"), 10000);
-    const res = await chrome.runtime.sendMessage({ action: "save-account", data });
-    this._message(res.success ? "success" : "error", res.message);
-    if (res.success) {
-      const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
-      this.accounts = settings.accounts;
-      this.activeAccountId = settings.activeAccountId;
-      this.selectAccount(res.id);
+    let permission;
+    try {
+      permission = dsmHostPermission(data.host);
+    } catch {
+      this._message("error", chrome.i18n.getMessage("invalidHost"));
+      return;
     }
-    this.loading = false;
+
+    this.loading = true;
+    try {
+      if (!await chrome.permissions.request(permission)) {
+        this._message("error", chrome.i18n.getMessage("nasPermissionRequired"));
+        return;
+      }
+      this._message("", chrome.i18n.getMessage("settingsSaving"), 10000);
+      const res = await chrome.runtime.sendMessage({ action: "save-account", data });
+      this._message(res.success ? "success" : "error", res.message);
+      if (res.success) {
+        const settings = await chrome.runtime.sendMessage({ action: "get-settings" });
+        this.accounts = settings.accounts;
+        this.activeAccountId = settings.activeAccountId;
+        this.selectAccount(res.id);
+      }
+    } catch (error) {
+      this._message("error", error.message);
+    } finally {
+      this.loading = false;
+    }
   },
 
   handleDelete: async function () {

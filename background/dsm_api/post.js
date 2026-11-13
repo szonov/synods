@@ -1,3 +1,5 @@
+import { dsmHostPermission } from "./host_permission.js";
+
 const POST_TIMEOUT = 10000; // 10 sec
 
 /**
@@ -50,6 +52,9 @@ export async function post(url, init) {
     : timeoutSignal;
 
   try {
+    if (!await chrome.permissions.contains(dsmHostPermission(new URL(url).origin))) {
+      return errorResponse("unknown", chrome.i18n.getMessage("nasPermissionRequired"));
+    }
     const res = await fetch(url, options);
 
     if (!res.ok) {
